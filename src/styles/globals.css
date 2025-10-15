@@ -1,0 +1,409 @@
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --font-size: 14px;
+  --background: #ffffff;
+  --foreground: #152a38;
+  --card: #ffffff;
+  --card-foreground: #152a38;
+  --popover: #ffffff;
+  --popover-foreground: #152a38;
+  --primary: #152a38;
+  --primary-foreground: #ffffff;
+  --secondary: #f8fafc;
+  --secondary-foreground: #152a38;
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+  --accent: #e2e8f0;
+  --accent-foreground: #152a38;
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+  --border: rgba(21, 42, 56, 0.1);
+  --input: rgba(21, 42, 56, 0.1);
+  --input-background: #f8fafc;
+  --switch-background: #cbd5e1;
+  --font-weight-medium: 500;
+  --font-weight-normal: 400;
+  --ring: #152a38;
+  --chart-1: #152a38;
+  --chart-2: #3b82f6;
+  --chart-3: #06b6d4;
+  --chart-4: #8b5cf6;
+  --chart-5: #f59e0b;
+  --radius: 0.75rem;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #152a38;
+  --sidebar-primary: #152a38;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f8fafc;
+  --sidebar-accent-foreground: #152a38;
+  --sidebar-border: rgba(21, 42, 56, 0.1);
+  --sidebar-ring: #152a38;
+
+  /* Custom colors for the app */
+  --blue-primary: #152a38;
+  --blue-light: #1e3a8a;
+  --blue-lighter: #3b82f6;
+  --white: #ffffff;
+  --gray-light: #f8fafc;
+  --gray-medium: #64748b;
+  --header-bg: #ffffff;
+  --card-bg: #ffffff;
+}
+
+.dark {
+  --background: #0f172a;
+  --foreground: #f1f5f9;
+  --card: #1e293b;
+  --card-foreground: #f1f5f9;
+  --popover: #1e293b;
+  --popover-foreground: #f1f5f9;
+  --primary: #60a5fa;
+  --primary-foreground: #0f172a;
+  --secondary: #334155;
+  --secondary-foreground: #f1f5f9;
+  --muted: #334155;
+  --muted-foreground: #cbd5e1;
+  --accent: #334155;
+  --accent-foreground: #f1f5f9;
+  --destructive: #f87171;
+  --destructive-foreground: #0f172a;
+  --border: rgba(203, 213, 225, 0.2);
+  --input: rgba(203, 213, 225, 0.2);
+  --input-background: #334155;
+  --switch-background: #475569;
+  --ring: #60a5fa;
+  --chart-1: #60a5fa;
+  --chart-2: #22d3ee;
+  --chart-3: #a78bfa;
+  --chart-4: #fbbf24;
+  --chart-5: #34d399;
+  --sidebar: #1e293b;
+  --sidebar-foreground: #f1f5f9;
+  --sidebar-primary: #60a5fa;
+  --sidebar-primary-foreground: #0f172a;
+  --sidebar-accent: #334155;
+  --sidebar-accent-foreground: #f1f5f9;
+  --sidebar-border: rgba(203, 213, 225, 0.2);
+  --sidebar-ring: #60a5fa;
+
+  /* Custom colors for dark mode - Much brighter and more contrasted */
+  --blue-primary: #60a5fa;
+  --blue-light: #93c5fd;
+  --blue-lighter: #bfdbfe;
+  --white: #f1f5f9;
+  --gray-light: #334155;
+  --gray-medium: #cbd5e1;
+  --header-bg: #1e293b;
+  --card-bg: #1e293b;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-input-background: var(--input-background);
+  --color-switch-background: var(--switch-background);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(
+    --sidebar-primary-foreground
+  );
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(
+    --sidebar-accent-foreground
+  );
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Custom utility classes */
+  --color-blue-primary: var(--blue-primary);
+  --color-blue-light: var(--blue-light);
+  --color-blue-lighter: var(--blue-lighter);
+  --color-white: var(--white);
+  --color-gray-light: var(--gray-light);
+  --color-gray-medium: var(--gray-medium);
+  --color-header-bg: var(--header-bg);
+  --color-card-bg: var(--card-bg);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground transition-colors duration-300;
+  }
+}
+
+/**
+ * Base typography. This is not applied to elements which have an ancestor with a Tailwind text class.
+ */
+@layer base {
+  :where(
+    :not(:has([class*=" text-"]), :not(:has([class^="text-"])))
+  ) {
+    h1 {
+      font-size: var(--text-2xl);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
+
+    h2 {
+      font-size: var(--text-xl);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
+
+    h3 {
+      font-size: var(--text-lg);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
+
+    h4 {
+      font-size: var(--text-base);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
+
+    p {
+      font-size: var(--text-base);
+      font-weight: var(--font-weight-normal);
+      line-height: 1.5;
+    }
+
+    label {
+      font-size: var(--text-base);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
+
+    button {
+      font-size: var(--text-base);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
+
+    input {
+      font-size: var(--text-base);
+      font-weight: var(--font-weight-normal);
+      line-height: 1.5;
+    }
+  }
+}
+
+html {
+  font-size: var(--font-size);
+}
+
+/* Custom gaming-style utilities */
+@layer utilities {
+  .bg-blue-primary {
+    background-color: var(--blue-primary);
+  }
+
+  .text-blue-primary {
+    color: var(--blue-primary);
+  }
+
+  .border-blue-primary {
+    border-color: var(--blue-primary);
+  }
+
+  .bg-header {
+    background-color: var(--header-bg);
+  }
+
+  .bg-card-custom {
+    background-color: var(--card-bg);
+  }
+
+  .gaming-card {
+    background: var(--card-bg);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--border);
+    transition: all 0.3s ease;
+  }
+
+  .dark .gaming-card {
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+    border: 1px solid var(--border);
+  }
+
+  .gaming-button {
+    background: linear-gradient(
+      135deg,
+      var(--blue-primary) 0%,
+      var(--blue-light) 100%
+    );
+    transition: all 0.3s ease;
+    border: none;
+  }
+
+  .gaming-button:hover {
+    background: linear-gradient(
+      135deg,
+      var(--blue-light) 0%,
+      var(--blue-lighter) 100%
+    );
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+  }
+
+  .dark .gaming-button {
+    background: linear-gradient(
+      135deg,
+      var(--blue-primary) 0%,
+      var(--blue-light) 100%
+    );
+    color: var(--background);
+  }
+
+  .dark .gaming-button:hover {
+    background: linear-gradient(
+      135deg,
+      var(--blue-light) 0%,
+      var(--blue-lighter) 100%
+    );
+    box-shadow: 0 10px 25px rgba(96, 165, 250, 0.5);
+    color: var(--background);
+  }
+
+  /* Gradient backgrounds that adapt to theme */
+  .bg-gradient-app {
+    background: linear-gradient(
+      135deg,
+      var(--background) 0%,
+      var(--gray-light) 50%,
+      var(--background) 100%
+    );
+  }
+
+  /* Enhanced dark mode specific styles for better contrast */
+  .dark .text-blue-primary {
+    color: #60a5fa;
+    text-shadow: 0 0 1px rgba(96, 165, 250, 0.3);
+  }
+
+  .dark h1.text-blue-primary,
+  .dark h2.text-blue-primary,
+  .dark h3.text-blue-primary,
+  .dark h4.text-blue-primary {
+    color: #93c5fd;
+    text-shadow: 0 0 2px rgba(147, 197, 253, 0.4);
+  }
+
+  .dark .border-blue-primary {
+    border-color: #60a5fa;
+  }
+
+  /* Custom scrollbar for dark mode */
+  .dark ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .dark ::-webkit-scrollbar-track {
+    background: var(--muted);
+  }
+
+  .dark ::-webkit-scrollbar-thumb {
+    background: var(--muted-foreground);
+    border-radius: 4px;
+  }
+
+  .dark ::-webkit-scrollbar-thumb:hover {
+    background: var(--primary);
+  }
+
+  /* Enhanced contrast for cards and interactive elements in dark mode */
+  .dark .gaming-card:hover {
+    border-color: rgba(96, 165, 250, 0.4);
+    box-shadow:
+      0 10px 25px rgba(0, 0, 0, 0.5),
+      0 0 0 1px rgba(96, 165, 250, 0.2);
+  }
+
+  /* Better visibility for badges and status indicators in dark mode */
+  .dark .bg-blue-100 {
+    background-color: rgba(96, 165, 250, 0.2);
+  }
+
+  .dark .text-blue-500,
+  .dark .text-blue-600 {
+    color: #60a5fa;
+  }
+
+  .dark .bg-green-100 {
+    background-color: rgba(34, 197, 94, 0.2);
+  }
+
+  .dark .bg-purple-100 {
+    background-color: rgba(168, 85, 247, 0.2);
+  }
+
+  .dark .bg-orange-100 {
+    background-color: rgba(251, 146, 60, 0.2);
+  }
+
+  .dark .bg-yellow-100 {
+    background-color: rgba(251, 191, 36, 0.2);
+  }
+
+  .dark .text-yellow-800 {
+    color: #fbbf24;
+  }
+
+  .dark .text-green-800 {
+    color: #34d399;
+  }
+
+  .dark .text-purple-800 {
+    color: #a78bfa;
+  }
+
+  .dark .text-orange-800 {
+    color: #fb923c;
+  }
+}
+
+/* Smooth transitions for theme changes */
+* {
+  transition-property: color, background-color, border-color,
+    text-decoration-color, fill, stroke, box-shadow;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 200ms;
+}
+
+/* Enhanced focus states for dark mode */
+.dark *:focus-visible {
+  outline: 2px solid #60a5fa;
+  outline-offset: 2px;
+}
