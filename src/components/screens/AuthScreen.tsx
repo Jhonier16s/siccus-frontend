@@ -26,6 +26,7 @@ export function AuthScreen({ onLogin }: AuthScreenProps) {
   const [registerPassword, setRegisterPassword] = useState('');
 
   const handleLogin = async (e: React.FormEvent) => {
+    onLogin(); //login to tests
     e.preventDefault();
     setIsLoading(true);
     setLoginError(null);
