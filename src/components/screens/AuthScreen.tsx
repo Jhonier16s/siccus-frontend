@@ -1,28 +1,63 @@
 import React, { useState } from 'react';
-import logo from '../assets/logo.png';
-import { Button } from './ui/button';
-import { Input } from './ui/input';
-import { Label } from './ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
+import { loginUser, registerUser } from '../../services/authService';
+import logo from '../../assets/logo.png';
+import { Button } from '../ui/button';
+import { Input } from '../ui/input';
+import { Label } from '../ui/label';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 import { User, Mail, Lock, Gamepad2 } from 'lucide-react';
 
 interface AuthScreenProps {
   onLogin: () => void;
 }
 
+
 export function AuthScreen({ onLogin }: AuthScreenProps) {
   const [isLoading, setIsLoading] = useState(false);
+  const [loginError, setLoginError] = useState<string | null>(null);
+  const [registerError, setRegisterError] = useState<string | null>(null);
+  // Login form state
+  const [loginEmail, setLoginEmail] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
+  // Register form state
+  const [registerName, setRegisterName] = useState('');
+  const [registerEmail, setRegisterEmail] = useState('');
+  const [registerPassword, setRegisterPassword] = useState('');
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    
-    // Simulate API call
-    setTimeout(() => {
+    setLoginError(null);
+    try {
+      const res = await loginUser({ email: loginEmail, password: loginPassword });
       setIsLoading(false);
+      if (res.success === false) {
+        setLoginError(res.message || 'Credenciales inválidas');
+        return;
+      }
       onLogin();
-    }, 1500);
+    } catch (err: any) {
+      setIsLoading(false);
+      setLoginError(err.message || 'Error al iniciar sesión');
+    }
+  };
+
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setRegisterError(null);
+    try {
+      await registerUser({ name: registerName, email: registerEmail, password: registerPassword });
+      setIsLoading(false);
+      // Auto-login tras registro
+      await handleLogin({
+        preventDefault: () => {},
+      } as unknown as React.FormEvent);
+    } catch (err: any) {
+      setIsLoading(false);
+      setRegisterError(err.message || 'Error al registrar');
+    }
   };
 
   return (
@@ -56,7 +91,7 @@ export function AuthScreen({ onLogin }: AuthScreenProps) {
               </TabsList>
 
               <TabsContent value="login">
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <form onSubmit={handleLogin} className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="email">Email</Label>
                     <div className="relative">
@@ -67,6 +102,9 @@ export function AuthScreen({ onLogin }: AuthScreenProps) {
                         placeholder="tu@email.com"
                         className="pl-10 border-gray-300 focus:border-blue-primary"
                         required
+                        value={loginEmail}
+                        onChange={e => setLoginEmail(e.target.value)}
+                        autoComplete="username"
                       />
                     </div>
                   </div>
@@ -80,9 +118,13 @@ export function AuthScreen({ onLogin }: AuthScreenProps) {
                         placeholder="••••••••"
                         className="pl-10 border-gray-300 focus:border-blue-primary"
                         required
+                        value={loginPassword}
+                        onChange={e => setLoginPassword(e.target.value)}
+                        autoComplete="current-password"
                       />
                     </div>
                   </div>
+                  {loginError && <div className="text-red-500 text-sm text-center">{loginError}</div>}
                   <Button 
                     type="submit" 
                     className="w-full gaming-button text-white border-0"
@@ -94,7 +136,7 @@ export function AuthScreen({ onLogin }: AuthScreenProps) {
               </TabsContent>
 
               <TabsContent value="register">
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <form onSubmit={handleRegister} className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="name">Nombre completo</Label>
                     <div className="relative">
@@ -105,6 +147,9 @@ export function AuthScreen({ onLogin }: AuthScreenProps) {
                         placeholder="Tu nombre"
                         className="pl-10 border-gray-300 focus:border-blue-primary"
                         required
+                        value={registerName}
+                        onChange={e => setRegisterName(e.target.value)}
+                        autoComplete="name"
                       />
                     </div>
                   </div>
@@ -118,6 +163,9 @@ export function AuthScreen({ onLogin }: AuthScreenProps) {
                         placeholder="tu@email.com"
                         className="pl-10 border-gray-300 focus:border-blue-primary"
                         required
+                        value={registerEmail}
+                        onChange={e => setRegisterEmail(e.target.value)}
+                        autoComplete="email"
                       />
                     </div>
                   </div>
@@ -131,9 +179,13 @@ export function AuthScreen({ onLogin }: AuthScreenProps) {
                         placeholder="••••••••"
                         className="pl-10 border-gray-300 focus:border-blue-primary"
                         required
+                        value={registerPassword}
+                        onChange={e => setRegisterPassword(e.target.value)}
+                        autoComplete="new-password"
                       />
                     </div>
                   </div>
+                  {registerError && <div className="text-red-500 text-sm text-center">{registerError}</div>}
                   <Button 
                     type="submit" 
                     className="w-full gaming-button text-white border-0"

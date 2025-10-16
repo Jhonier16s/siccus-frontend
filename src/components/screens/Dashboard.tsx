@@ -1,14 +1,14 @@
 import React, { useState } from "react";
-import { Button } from "./ui/button";
+import { Button } from ".././ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "./ui/card";
-import { Badge } from "./ui/badge";
-import { Avatar3D } from "./Avatar3D";
+} from ".././ui/card";
+import { Badge } from ".././ui/badge";
+import { Avatar3D } from ".././Avatar3D";
 import { 
   Trophy, 
   Target, 

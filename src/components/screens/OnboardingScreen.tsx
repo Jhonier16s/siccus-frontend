@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { Button } from './ui/button';
-import { Input } from './ui/input';
-import { Label } from './ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
-import { RadioGroup, RadioGroupItem } from './ui/radio-group';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-import { Progress } from './ui/progress';
+import { Button } from '.././ui/button';
+import { Input } from '.././ui/input';
+import { Label } from '.././ui/label';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '.././ui/card';
+import { RadioGroup, RadioGroupItem } from '.././ui/radio-group';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.././ui/select';
+import { Progress } from '.././ui/progress';
 import { ChevronRight, ChevronLeft, Target, Activity, Calendar, Ruler, Weight, X } from 'lucide-react';
 
 interface OnboardingScreenProps {

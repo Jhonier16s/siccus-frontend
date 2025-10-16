@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
-import { Badge } from './ui/badge';
-import { Progress } from './ui/progress';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '.././ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '.././ui/tabs';
+import { Badge } from '.././ui/badge';
+import { Progress } from '.././ui/progress';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.././ui/select';
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { 
   TrendingUp, 
