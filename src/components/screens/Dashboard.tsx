@@ -8,20 +8,19 @@ import {
   CardTitle,
 } from ".././ui/card";
 import { Badge } from ".././ui/badge";
-import { Avatar3D } from ".././Avatar3D";
-import { 
-  Trophy, 
-  Target, 
-  TrendingUp,
-  Award,
-  Plus
-} from "lucide-react";
+import { AvatarWithLoader } from ".././AvatarWithLoader";
+import { useAuthStore } from "../../store/authStore";
+import { getRpmImageUrl } from "../../utils/avatar";
+import { Trophy, Target, TrendingUp, Award, Plus } from "lucide-react";
 
 interface DashboardProps {
   onNavigate: (view: string) => void;
 }
 
 export function Dashboard({ onNavigate }: DashboardProps) {
+  const authUser = useAuthStore((s) => s.user);
+  const storedAvatar = (authUser?.avatarUrl as string) || "";
+  const avatarImageUrl = getRpmImageUrl(storedAvatar);
   const [userStats] = useState({
     level: 12,
     health: 85,
@@ -91,9 +90,7 @@ export function Dashboard({ onNavigate }: DashboardProps) {
     },
   ]);
 
-  const completedTasks = dailyTasks.filter(
-    (task) => task.completed,
-  ).length;
+  const completedTasks = dailyTasks.filter((task) => task.completed).length;
   const totalXP = dailyTasks
     .filter((task) => task.completed)
     .reduce((sum, task) => sum + task.xp, 0);
@@ -103,12 +100,9 @@ export function Dashboard({ onNavigate }: DashboardProps) {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Avatar Column */}
         <div className="lg:col-span-1">
-          <Avatar3D
-            level={userStats.level}
-            health={userStats.health}
-            energy={userStats.energy}
-            experience={userStats.experience}
-          />
+          <div className="flex items-center justify-center mx-auto w-40 h-40 rounded-xl overflow-hidden border border-border shadow-[0_0_0_1px_rgba(59,130,246,0.25)]">
+            <AvatarWithLoader hasImg imageUrl={avatarImageUrl || undefined} className="w-full h-full"/>
+          </div>
 
           {/* Quick Stats */}
           <Card className="gaming-card mt-6">
@@ -121,9 +115,7 @@ export function Dashboard({ onNavigate }: DashboardProps) {
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                   <Target className="h-4 w-4 text-blue-primary" />
-                  <span className="text-sm text-foreground">
-                    Tareas completadas
-                  </span>
+                  <span className="text-sm text-foreground">Tareas completadas</span>
                 </div>
                 <Badge className="bg-blue-primary text-white">
                   {completedTasks}/{dailyTasks.length}
@@ -144,9 +136,7 @@ export function Dashboard({ onNavigate }: DashboardProps) {
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                   <TrendingUp className="h-4 w-4 text-green-500" />
-                  <span className="text-sm text-foreground">
-                    Meta semanal
-                  </span>
+                  <span className="text-sm text-foreground">Meta semanal</span>
                 </div>
                 <Badge
                   variant="secondary"
@@ -169,14 +159,10 @@ export function Dashboard({ onNavigate }: DashboardProps) {
                   Misiones Diarias
                 </CardTitle>
                 <CardDescription className="text-muted-foreground">
-                  Completa tus tareas para ganar XP y mejorar
-                  tu salud
+                  Completa tus tareas para ganar XP y mejorar tu salud
                 </CardDescription>
               </div>
-              <Button
-                className="gaming-button text-white border-0"
-                size="sm"
-              >
+              <Button className="gaming-button text-white border-0" size="sm">
                 <Plus className="h-4 w-4 mr-2" />
                 Nueva Misión
               </Button>
@@ -224,9 +210,7 @@ export function Dashboard({ onNavigate }: DashboardProps) {
                     </span>
                   </div>
                   <Badge
-                    variant={
-                      task.completed ? "secondary" : "outline"
-                    }
+                    variant={task.completed ? "secondary" : "outline"}
                     className="bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-300"
                   >
                     +{task.xp} XP
@@ -256,11 +240,11 @@ export function Dashboard({ onNavigate }: DashboardProps) {
                         ? "bg-yellow-50 border-yellow-200 dark:bg-yellow-900/20 dark:border-yellow-800 hover:shadow-lg"
                         : "bg-muted border-border opacity-60"
                     }`}
-                    onClick={() => achievement.unlocked && onNavigate('achievements')}
+                    onClick={() =>
+                      achievement.unlocked && onNavigate("achievements")
+                    }
                   >
-                    <div className="text-3xl mb-2">
-                      {achievement.icon}
-                    </div>
+                    <div className="text-3xl mb-2">{achievement.icon}</div>
                     <h5 className="text-blue-primary mb-1 text-sm">
                       {achievement.title}
                     </h5>
@@ -273,11 +257,11 @@ export function Dashboard({ onNavigate }: DashboardProps) {
                   </div>
                 ))}
               </div>
-              {achievements.some(a => a.unlocked) && (
+              {achievements.some((a) => a.unlocked) && (
                 <div className="mt-6 text-center">
-                  <Button 
-                    variant="outline" 
-                    onClick={() => onNavigate('achievements')}
+                  <Button
+                    variant="outline"
+                    onClick={() => onNavigate("achievements")}
                     className="border-blue-primary text-blue-primary hover:bg-blue-primary hover:text-white transition-colors"
                   >
                     Ver todos los logros
@@ -288,8 +272,6 @@ export function Dashboard({ onNavigate }: DashboardProps) {
           </Card>
         </div>
       </div>
-
-
     </div>
   );
 }

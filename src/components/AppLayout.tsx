@@ -4,6 +4,9 @@ import { AppDrawer } from './AppDrawer';
 import { AppBreadcrumbs } from './AppBreadcrumbs';
 import { Button } from './ui/button';
 import { Gamepad2, Bell } from 'lucide-react';
+import { AvatarWithLoader } from './AvatarWithLoader';
+import { getRpmImageUrl } from '../utils/avatar';
+import { useAuthStore } from '../store/authStore';
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -28,6 +31,9 @@ export function AppLayout({
   showHeader = true,
   showBreadcrumbs = true
 }: AppLayoutProps) {
+  const authUser = useAuthStore(s => s.user);
+  const storedAvatar = (authUser?.avatarUrl as string) || '';
+  const avatarUrl = getRpmImageUrl(storedAvatar);
   return (
     <div className="min-h-screen bg-gradient-app transition-colors duration-300">
       {/* Header */}
@@ -44,6 +50,7 @@ export function AppLayout({
               <div>
                 <img src={logo} alt="Siccus Logo" className="h-8 w-8 object-contain" />
               </div>
+              <AvatarWithLoader imageUrl={avatarUrl} className="w-8 h-8 rounded-full" />
               <div>
                 <h1 className="text-blue-primary">Siccus</h1>
                 <p className="text-xs text-muted-foreground">
