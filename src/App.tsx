@@ -3,6 +3,7 @@ import { AuthScreen } from './components/screens/AuthScreen';
 import { OnboardingScreen } from './components/screens/OnboardingScreen';
 import { Dashboard } from './components/screens/Dashboard';
 import { ProfileScreen } from './components/screens/ProfileScreen';
+import { AvatarCreatorScreen } from './components/screens/AvatarCreatorScreen';
 import { RemindersScreen } from './components/screens/RemindersScreen';
 import { ProgressScreen } from './components/screens/ProgressScreen';
 import { SettingsScreen } from './components/screens/SettingsScreen';
@@ -10,12 +11,15 @@ import { ExerciseScreen } from './components/screens/ExerciseScreen';
 import { AchievementsScreen } from './components/AchievementsScreen';
 import { AppLayout } from './components/AppLayout';
 import { ThemeProvider } from './components/ThemeProvider';
+import { Toaster } from './components/ui/sonner';
+import { useAuthStore } from './store/authStore';
 
-type AppState = 'auth' | 'onboarding' | 'dashboard' | 'profile' | 'reminders' | 'progress' | 'exercise' | 'achievements' | 'settings';
+type AppState = 'auth' | 'onboarding' | 'dashboard' | 'profile' | 'reminders' | 'progress' | 'exercise' | 'achievements' | 'settings' | 'avatar-creator';
 
 function AppContent() {
   const [currentScreen, setCurrentScreen] = useState<AppState>('auth');
   const [user, setUser] = useState<any>(null);
+  const clearAuth = useAuthStore(s => s.clearAuth);
 
   // Mock user stats - in a real app this would come from your data store
   const userStats = {
@@ -36,6 +40,7 @@ function AppContent() {
 
   const handleLogout = () => {
     setUser(null);
+    clearAuth();
     setCurrentScreen('auth');
   };
 
@@ -71,6 +76,11 @@ function AppContent() {
     return <OnboardingScreen onComplete={handleOnboardingComplete} />;
   }
 
+  // Avatar creator should be truly full-screen: render without AppLayout
+  if (currentScreen === 'avatar-creator') {
+    return <AvatarCreatorScreen onBack={() => setCurrentScreen('profile')} />;
+  }
+
   // All other screens use the AppLayout
   const renderContent = () => {
     switch (currentScreen) {
@@ -78,7 +88,7 @@ function AppContent() {
         return <Dashboard onNavigate={handleNavigate} />;
         
       case 'profile':
-        return <ProfileScreen />;
+        return <ProfileScreen onOpenAvatarCreator={() => setCurrentScreen('avatar-creator')} />;
         
       case 'reminders':
         return <RemindersScreen />;
@@ -116,6 +126,7 @@ export default function App() {
   return (
     <ThemeProvider>
       <AppContent />
+      <Toaster position="top-right" richColors />
     </ThemeProvider>
   );
 }

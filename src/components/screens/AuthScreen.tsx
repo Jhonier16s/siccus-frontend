@@ -7,6 +7,8 @@ import { Label } from '../ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 import { User, Mail, Lock, Gamepad2 } from 'lucide-react';
+import { toast } from 'sonner@2.0.3';
+import { useAuthStore } from '../../store/authStore';
 
 interface AuthScreenProps {
   onLogin: () => void;
@@ -15,8 +17,10 @@ interface AuthScreenProps {
 
 export function AuthScreen({ onLogin }: AuthScreenProps) {
   const [isLoading, setIsLoading] = useState(false);
+  const setAuth = useAuthStore(s => s.setAuth);
   const [loginError, setLoginError] = useState<string | null>(null);
   const [registerError, setRegisterError] = useState<string | null>(null);
+  const [tab, setTab] = useState<'login' | 'register'>('login');
   // Login form state
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
@@ -26,7 +30,7 @@ export function AuthScreen({ onLogin }: AuthScreenProps) {
   const [registerPassword, setRegisterPassword] = useState('');
 
   const handleLogin = async (e: React.FormEvent) => {
-    onLogin(); //login to tests
+    /* onLogin(); //login to tests */
     e.preventDefault();
     setIsLoading(true);
     setLoginError(null);
@@ -34,13 +38,25 @@ export function AuthScreen({ onLogin }: AuthScreenProps) {
       const res = await loginUser({ email: loginEmail, password: loginPassword });
       setIsLoading(false);
       if (res.success === false) {
-        setLoginError(res.message || 'Credenciales inválidas');
+        const msg = res.message || 'Credenciales inválidas';
+        setLoginError(msg);
+        toast.error(msg);
         return;
       }
+      const token = res.access_token || res.token;
+      if (!token) {
+        setLoginError('No se recibió token de autenticación');
+        return;
+      }
+      const user = res.user || null;
+      setAuth({ token, user });
+      toast.success(`Bienvenido${res?.user?.nombre ? ', ' + res.user.nombre : ''}`);
       onLogin();
     } catch (err: any) {
       setIsLoading(false);
-      setLoginError(err.message || 'Error al iniciar sesión');
+      const msg = err.message || 'Error al iniciar sesión';
+      setLoginError(msg);
+      toast.error(msg);
     }
   };
 
@@ -51,13 +67,13 @@ export function AuthScreen({ onLogin }: AuthScreenProps) {
     try {
       await registerUser({ name: registerName, email: registerEmail, password: registerPassword });
       setIsLoading(false);
-      // Auto-login tras registro
-      await handleLogin({
-        preventDefault: () => {},
-      } as unknown as React.FormEvent);
+      toast.success('Usuario creado con éxito. Por favor, inicia sesión.');
+      setTab('login');
     } catch (err: any) {
       setIsLoading(false);
-      setRegisterError(err.message || 'Error al registrar');
+      const msg = err.message || 'Error al registrar';
+      setRegisterError(msg);
+      toast.error(msg);
     }
   };
 
@@ -81,7 +97,7 @@ export function AuthScreen({ onLogin }: AuthScreenProps) {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Tabs defaultValue="login" className="w-full">
+            <Tabs value={tab} onValueChange={(v) => setTab(v as 'login'|'register')} className="w-full">
               <TabsList className="grid w-full grid-cols-2 mb-6">
                 <TabsTrigger value="login" className="data-[state=active]:bg-blue-primary data-[state=active]:text-white">
                   Ingresar
@@ -125,13 +141,20 @@ export function AuthScreen({ onLogin }: AuthScreenProps) {
                       />
                     </div>
                   </div>
-                  {loginError && <div className="text-red-500 text-sm text-center">{loginError}</div>}
                   <Button 
                     type="submit" 
                     className="w-full gaming-button text-white border-0"
                     disabled={isLoading}
                   >
-                    {isLoading ? 'Iniciando...' : 'Iniciar Sesión'}
+                    {isLoading ? (
+                      <span className="inline-flex items-center gap-2">
+                        <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+                        </svg>
+                        Iniciando...
+                      </span>
+                    ) : 'Iniciar Sesión'}
                   </Button>
                 </form>
               </TabsContent>
@@ -186,13 +209,20 @@ export function AuthScreen({ onLogin }: AuthScreenProps) {
                       />
                     </div>
                   </div>
-                  {registerError && <div className="text-red-500 text-sm text-center">{registerError}</div>}
                   <Button 
                     type="submit" 
                     className="w-full gaming-button text-white border-0"
                     disabled={isLoading}
                   >
-                    {isLoading ? 'Creando cuenta...' : 'Crear Cuenta'}
+                    {isLoading ? (
+                      <span className="inline-flex items-center gap-2">
+                        <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+                        </svg>
+                        Creando cuenta...
+                      </span>
+                    ) : 'Crear Cuenta'}
                   </Button>
                 </form>
               </TabsContent>
