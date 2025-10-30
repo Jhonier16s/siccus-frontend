@@ -12,7 +12,10 @@ export interface AuthUser {
 interface AuthState {
   token: string | null;
   user: AuthUser | null;
+  isUserLoading: boolean;
   setAuth: (payload: { token: string; user: AuthUser }) => void;
+  setUser: (user: AuthUser) => void;
+  setUserLoading: (loading: boolean) => void;
   clearAuth: () => void;
 }
 
@@ -21,7 +24,10 @@ export const useAuthStore = create<AuthState>()(
     (set) => ({
       token: null,
       user: null,
+      isUserLoading: false,
       setAuth: ({ token, user }: { token: string; user: AuthUser }) => set({ token, user }),
+      setUser: (user: AuthUser) => set({ user }),
+      setUserLoading: (loading: boolean) => set({ isUserLoading: loading }),
       clearAuth: () => set({ token: null, user: null }),
     }),
     {

@@ -21,6 +21,7 @@ export function Dashboard({ onNavigate }: DashboardProps) {
   const authUser = useAuthStore((s) => s.user);
   const storedAvatar = (authUser?.avatarUrl as string) || "";
   const avatarImageUrl = getRpmImageUrl(storedAvatar);
+  const isUserLoading = useAuthStore(s => s.isUserLoading);
   const [userStats] = useState({
     level: 12,
     health: 85,
@@ -101,7 +102,7 @@ export function Dashboard({ onNavigate }: DashboardProps) {
         {/* Avatar Column */}
         <div className="lg:col-span-1">
           <div className="flex items-center justify-center mx-auto w-40 h-40 rounded-xl overflow-hidden border border-border shadow-[0_0_0_1px_rgba(59,130,246,0.25)]">
-            <AvatarWithLoader hasImg imageUrl={avatarImageUrl || undefined} className="w-full h-full"/>
+            <AvatarWithLoader hasImg imageUrl={avatarImageUrl || undefined} loading={isUserLoading} className="w-full h-full"/>
           </div>
 
           {/* Quick Stats */}

@@ -82,6 +82,8 @@ export function ProfileScreen({ onOpenAvatarCreator }: ProfileScreenProps) {
       );
       console.log("avatarUrl:", authUser?.avatarUrl);
       try {
+        // Global loading on while we fetch user
+        try { useAuthStore.getState().setUserLoading(true); } catch {}
         const id =
           (authUser?.id_usuario as number) || (authUser?.id as number) || 1;
         const data = await getUser(id);
@@ -94,6 +96,8 @@ export function ProfileScreen({ onOpenAvatarCreator }: ProfileScreenProps) {
         }));
       } catch (e) {
         // noop
+      } finally {
+        try { useAuthStore.getState().setUserLoading(false); } catch {}
       }
     };
     load();
@@ -108,6 +112,7 @@ export function ProfileScreen({ onOpenAvatarCreator }: ProfileScreenProps) {
             <div className="relative">
               <AvatarWithLoader 
                 imageUrl={getRpmImageUrl(profileData.avatarUrl) || undefined}
+                loading={useAuthStore(s => s.isUserLoading)}
                 className="w-24 h-24 rounded-full"
               />
               <button className="absolute -bottom-2 -right-2 bg-blue-primary text-white p-2 rounded-full hover:bg-blue-light transition-colors">

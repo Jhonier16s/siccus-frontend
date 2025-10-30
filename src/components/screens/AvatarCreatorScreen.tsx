@@ -22,6 +22,7 @@ export function AvatarCreatorScreen({ onBack, userId = 1 }: AvatarCreatorScreenP
   const authUser = useAuthStore(s => s.user);
   const effectiveUserId = (authUser?.id_usuario as number) || (authUser?.id as number) || userId;
   const setAuth = useAuthStore(s => s.setAuth);
+  const setUserLoading = useAuthStore(s => s.setUserLoading);
   const config: AvatarCreatorConfig = {
     clearCache: true,
     bodyType: 'fullbody',
@@ -38,6 +39,7 @@ export function AvatarCreatorScreen({ onBack, userId = 1 }: AvatarCreatorScreenP
     console.log(`Avatar URL is: ${url}`);
     try {
       await updateUser(effectiveUserId, { avatarUrl: url });
+      setUserLoading(true);
       // Refetch user to update global state
       const refreshed = await getUser(effectiveUserId);
       const refreshedUser: any = (refreshed as any).user ?? refreshed;
@@ -50,6 +52,8 @@ export function AvatarCreatorScreen({ onBack, userId = 1 }: AvatarCreatorScreenP
       console.error('Error guardando avatarUrl:', e?.message || e);
       toast.error(e?.message || 'No se pudo actualizar el avatar');
       // Stay on the screen; you might show a toast here
+    } finally {
+      setUserLoading(false);
     }
   };
 

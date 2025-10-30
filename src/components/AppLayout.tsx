@@ -34,6 +34,7 @@ export function AppLayout({
   const authUser = useAuthStore(s => s.user);
   const storedAvatar = (authUser?.avatarUrl as string) || '';
   const avatarUrl = getRpmImageUrl(storedAvatar);
+  const isUserLoading = useAuthStore(s => s.isUserLoading);
   return (
     <div className="min-h-screen bg-gradient-app transition-colors duration-300">
       {/* Header */}
@@ -50,7 +51,7 @@ export function AppLayout({
               <div>
                 <img src={logo} alt="Siccus Logo" className="h-8 w-8 object-contain" />
               </div>
-              <AvatarWithLoader imageUrl={avatarUrl} className="w-8 h-8 rounded-full" />
+              <AvatarWithLoader imageUrl={avatarUrl} loading={isUserLoading} className="w-8 h-8 rounded-full" />
               <div>
                 <h1 className="text-blue-primary">Siccus</h1>
                 <p className="text-xs text-muted-foreground">

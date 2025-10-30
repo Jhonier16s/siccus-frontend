@@ -49,7 +49,7 @@ export function AppDrawer({
   const storedAvatar = (authUser?.avatarUrl as string) || "";
   const avatarImageUrl = getRpmImageUrl(storedAvatar);
 
-  console.log("Avatar URL en AppDrawer:", avatarImageUrl);
+  const isUserLoading = useAuthStore(s => s.isUserLoading);
 
   const menuItems = [
     { id: "dashboard", label: "Inicio", icon: Home },
@@ -98,6 +98,7 @@ export function AppDrawer({
           <div className="flex items-center space-x-4">
                   <AvatarWithLoader 
                     imageUrl={avatarImageUrl || undefined}
+                    loading={isUserLoading}
                     className="w-20 h-20 md:w-24 md:h-24 rounded-full ring-2 ring-blue-primary"
                   />
                   <div>
