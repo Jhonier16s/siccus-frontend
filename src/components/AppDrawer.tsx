@@ -15,13 +15,13 @@ import {
   Menu,
   Home,
   User,
-  Bell,
   TrendingUp,
   Activity,
   Trophy,
   Settings,
   LogOut,
   Star,
+  ListChecks,
 } from "lucide-react";
 import { useAuthStore } from "../store/authStore";
 import { getRpmImageUrl } from "../utils/avatar";
@@ -54,8 +54,8 @@ export function AppDrawer({
   const menuItems = [
     { id: "dashboard", label: "Inicio", icon: Home },
     { id: "profile", label: "Mi Perfil", icon: User },
+    { id: "missions", label: "Misiones", icon: ListChecks },
     { id: "progress", label: "Mi Progreso", icon: TrendingUp },
-    { id: "reminders", label: "Recordatorios", icon: Bell },
     { id: "exercise", label: "Ejercicio", icon: Activity },
     { id: "achievements", label: "Logros", icon: Trophy },
   ];

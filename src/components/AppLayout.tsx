@@ -3,7 +3,7 @@ import logo from '../assets/logo.png';
 import { AppDrawer } from './AppDrawer';
 import { AppBreadcrumbs } from './AppBreadcrumbs';
 import { Button } from './ui/button';
-import { Gamepad2, Bell } from 'lucide-react';
+import { ListChecks } from 'lucide-react';
 import { AvatarWithLoader } from './AvatarWithLoader';
 import { getRpmImageUrl } from '../utils/avatar';
 import { useAuthStore } from '../store/authStore';
@@ -64,9 +64,10 @@ export function AppLayout({
                 variant="outline" 
                 size="sm" 
                 className="border-border hover:bg-accent"
-                onClick={() => onNavigate('reminders')}
+                onClick={() => onNavigate('missions')}
+                title="Misiones"
               >
-                <Bell className="h-4 w-4" />
+                <ListChecks className="h-4 w-4" />
               </Button>
             </div>
           </div>

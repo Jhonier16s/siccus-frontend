@@ -27,9 +27,9 @@ export function AppBreadcrumbs({ currentView, onNavigate }: AppBreadcrumbsProps)
       label: 'Mi Progreso', 
       parent: 'dashboard' 
     },
-    reminders: { 
-      label: 'Recordatorios', 
-      parent: 'dashboard' 
+    missions: {
+      label: 'Misiones',
+      parent: 'dashboard'
     },
     nutrition: { 
       label: 'Nutrición', 

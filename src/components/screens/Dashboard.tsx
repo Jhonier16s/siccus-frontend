@@ -11,7 +11,28 @@ import { Badge } from ".././ui/badge";
 import { AvatarWithLoader } from ".././AvatarWithLoader";
 import { useAuthStore } from "../../store/authStore";
 import { getRpmImageUrl } from "../../utils/avatar";
-import { Trophy, Target, TrendingUp, Award, Plus } from "lucide-react";
+import {
+  Trophy,
+  Target,
+  TrendingUp,
+  Award,
+  Plus,
+  Heart,
+  Zap,
+  Share2,
+  Sparkles,
+  Flame,
+  Star,
+} from "lucide-react";
+import { useProgressStore } from "@/store/progressStore";
+import { Progress } from "../ui/progress";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from ".././ui/dialog";
 
 interface DashboardProps {
   onNavigate: (view: string) => void;
@@ -21,13 +42,28 @@ export function Dashboard({ onNavigate }: DashboardProps) {
   const authUser = useAuthStore((s) => s.user);
   const storedAvatar = (authUser?.avatarUrl as string) || "";
   const avatarImageUrl = getRpmImageUrl(storedAvatar);
-  const isUserLoading = useAuthStore(s => s.isUserLoading);
+  const isUserLoading = useAuthStore((s) => s.isUserLoading);
+  const displayName =
+    (authUser?.nombre as string) || (authUser?.name as string) || "Siccus";
+  const [isShareOpen, setIsShareOpen] = useState(false);
+  const progress = useProgressStore((s) => s.summary);
+  const level = progress.nivel || 1;
+  const xpTotal = progress.xpTotal || 0;
+  const xpInLevel = Math.max(0, progress.xpIntoLevel ?? 0);
+  const xpPerLevel = Math.max(1, progress.xpPerLevel ?? 100);
+  const xpPercent = Math.min(100, Math.max(0, progress.progressPct ?? 0));
+  const xpToNext = Math.max(
+    0,
+    progress.xpToNext ?? Math.max(0, xpPerLevel - xpInLevel)
+  );
+  const energy = Math.min(100, Math.max(0, progress.energiaTotal || 0));
+  const health = Math.min(100, Math.max(0, progress.saludTotal || 0));
   const [userStats] = useState({
-    level: 12,
-    health: 85,
-    energy: 72,
-    experience: 1450,
-    streak: 7,
+    level,
+    health,
+    energy,
+    experience: xpTotal,
+    streak: 0,
     weeklyGoal: 75,
   });
 
@@ -101,53 +137,272 @@ export function Dashboard({ onNavigate }: DashboardProps) {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Avatar Column */}
         <div className="lg:col-span-1">
-          <div className="flex items-center justify-center mx-auto w-40 h-40 rounded-xl overflow-hidden border border-border shadow-[0_0_0_1px_rgba(59,130,246,0.25)]">
-            <AvatarWithLoader hasImg imageUrl={avatarImageUrl || undefined} loading={isUserLoading} className="w-full h-full"/>
-          </div>
+          <button
+            type="button"
+            title="Personalizar avatar"
+            onClick={() => onNavigate("avatar-creator")}
+            className="group relative flex items-center justify-center mx-auto w-40 h-40 rounded-xl overflow-hidden border border-border transition-all duration-200 cursor-pointer hover:border-blue-primary hover:shadow-[0_0_0_3px_rgba(59,130,246,0.45)] focus:outline-none focus:ring-2 focus:ring-blue-primary/60"
+          >
+            <AvatarWithLoader
+              hasImg
+              imageUrl={avatarImageUrl || undefined}
+              loading={isUserLoading}
+              className="w-full h-full"
+            />
+          </button>
 
-          {/* Quick Stats */}
+          {/* Player Stats (gamified) */}
           <Card className="gaming-card mt-6">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-blue-primary">
-                Resumen de Hoy
-              </CardTitle>
+            <CardHeader className="pb-3 flex flex-row items-start justify-between">
+              <div>
+                <CardTitle className="text-blue-primary">
+                  Estado del Héroe
+                </CardTitle>
+                <CardDescription className="text-muted-foreground">
+                  Tu progreso en tiempo real
+                </CardDescription>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                className="border-border hover:bg-blue-primary/10"
+                onClick={() => setIsShareOpen(true)}
+                title="Compartir"
+              >
+                <Share2 className="h-4 w-4" />
+              </Button>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-6">
+              {/* Nivel */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
-                  <Target className="h-4 w-4 text-blue-primary" />
-                  <span className="text-sm text-foreground">Tareas completadas</span>
+                  <Trophy className="h-4 w-4 text-yellow-500" />
+                  <span className="text-sm text-foreground">Nivel</span>
                 </div>
-                <Badge className="bg-blue-primary text-white">
-                  {completedTasks}/{dailyTasks.length}
+                <Badge className="bg-yellow-500 text-white border-0">
+                  {level}
                 </Badge>
               </div>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <Award className="h-4 w-4 text-yellow-500" />
-                  <span className="text-sm text-foreground">XP ganada</span>
+
+              {/* XP */}
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center space-x-2">
+                    <Award className="h-4 w-4 text-blue-primary" />
+                    <span className="text-sm text-foreground">Experiencia</span>
+                  </div>
+                  <span className="text-xs text-muted-foreground">
+                    {xpInLevel}/{xpPerLevel} XP
+                  </span>
                 </div>
-                <Badge
-                  variant="secondary"
-                  className="bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-300"
-                >
-                  +{totalXP} XP
-                </Badge>
+                <Progress value={xpPercent} className="h-2" />
               </div>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <TrendingUp className="h-4 w-4 text-green-500" />
-                  <span className="text-sm text-foreground">Meta semanal</span>
+
+              {/* Energía */}
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center space-x-2">
+                    <Zap className="h-4 w-4 text-indigo-500" />
+                    <span className="text-sm text-foreground">Energía</span>
+                  </div>
+                  <span className="text-xs text-muted-foreground">
+                    {energy}%
+                  </span>
                 </div>
-                <Badge
-                  variant="secondary"
-                  className="bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300"
-                >
-                  {userStats.weeklyGoal}%
-                </Badge>
+                <Progress value={energy} className="h-2" />
+              </div>
+
+              {/* Salud */}
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center space-x-2">
+                    <Heart className="h-4 w-4 text-red-500" />
+                    <span className="text-sm text-foreground">Salud</span>
+                  </div>
+                  <span className="text-xs text-muted-foreground">
+                    {health}%
+                  </span>
+                </div>
+                <Progress value={health} className="h-2" />
               </div>
             </CardContent>
           </Card>
+
+          {/* Share Modal Gamificado */}
+          <Dialog open={isShareOpen} onOpenChange={setIsShareOpen}>
+            <DialogContent className="!w-auto !max-w-none !border-0 !bg-transparent !shadow-none !p-0 flex items-center justify-center [&>button]:text-white [&>button]:hover:bg-white/10 [&>button]:z-50">
+              {/* Card principal con diseño gamificado */}
+              <div
+                className="relative w-[420px] sm:w-[460px] rounded-3xl overflow-visible shadow-[0_20px_60px_rgba(0,0,0,0.65)]
+                 bg-gradient-to-b from-[#0d1628] via-[#0a1220] to-[#070d18]"
+              >
+                {/* Borde con efecto neón */}
+                <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-blue-400/20 via-purple-500/20 to-pink-500/20 p-[2px]">
+                  <div className="w-full h-full rounded-3xl bg-gradient-to-b from-[#0d1628] via-[#0a1220] to-[#070d18]" />
+                </div>
+
+                {/* Efectos de luz flotantes */}
+                <div
+                  className="absolute inset-0 pointer-events-none rounded-3xl overflow-hidden"
+                  style={{
+                    background: `
+                      radial-gradient(circle 280px at 50% 0%, rgba(56,189,248,0.15), transparent),
+                      radial-gradient(circle 230px at 100% 50%, rgba(168,85,247,0.12), transparent),
+                      radial-gradient(circle 200px at 0% 100%, rgba(236,72,153,0.10), transparent)
+                    `,
+                  }}
+                />
+
+                {/* Decoración superior - Badges flotantes con iconos */}
+                <div className="absolute -top-8 left-1/2 -translate-x-1/2 flex items-center gap-3 z-10">
+                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-yellow-400 to-orange-500 shadow-xl flex items-center justify-center animate-bounce">
+                    <Trophy className="w-8 h-8 text-white" />
+                  </div>
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-400 to-pink-500 shadow-lg flex items-center justify-center animate-pulse">
+                    <Flame className="w-6 h-6 text-white" />
+                  </div>
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-rose-400 to-red-500 shadow-lg flex items-center justify-center animate-pulse delay-75">
+                    <Heart className="w-6 h-6 text-white fill-white" />
+                  </div>
+                </div>
+
+                {/* Contenido principal */}
+                <div className="relative px-6 py-8 pt-14 text-white text-center flex flex-col items-center">
+                  {/* Avatar con efecto de brillo */}
+                  <div className="relative mb-6">
+                    <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-yellow-400 via-pink-500 to-purple-600 blur-xl opacity-50 animate-pulse" />
+                    <div className="relative w-32 h-32 rounded-2xl overflow-hidden ring-4 ring-yellow-400/50 shadow-2xl">
+                      {avatarImageUrl ? (
+                        <img
+                          src={avatarImageUrl}
+                          alt="Avatar"
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-gradient-to-br from-slate-600 to-slate-800" />
+                      )}
+                    </div>
+                    {/* Badge de nivel flotante */}
+                    <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full bg-gradient-to-r from-yellow-400 to-orange-500 shadow-lg flex items-center gap-1.5">
+                      <Star className="w-4 h-4 text-white fill-white" />
+                      <span className="text-sm font-bold text-white">
+                        Nivel {level}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Nombre y motivación */}
+                  <div className="mb-5">
+                    <h3 className="font-bold text-2xl bg-gradient-to-r from-blue-300 via-purple-300 to-pink-300 bg-clip-text text-transparent mb-1">
+                      {displayName}
+                    </h3>
+                    <p className="text-sm text-blue-200 font-medium flex items-center justify-center gap-1.5">
+                      <Sparkles className="w-4 h-4" />
+                      ¡Está conquistando su salud!
+                    </p>
+                  </div>
+
+                  {/* Stats Cards Gamificados */}
+                  <div className="w-full grid grid-cols-3 gap-3 mb-5">
+                    {/* XP Card */}
+                    <div className="bg-gradient-to-br from-yellow-500/20 to-orange-500/20 border border-yellow-400/30 rounded-xl p-3 backdrop-blur-sm hover:scale-105 transition-transform">
+                      <Award className="w-5 h-5 text-yellow-400 mx-auto mb-1.5" />
+                      <div className="text-2xl font-bold text-yellow-300">
+                        {xpInLevel}
+                      </div>
+                      <div className="text-[10px] text-yellow-200/70 uppercase tracking-wide">
+                        XP Total
+                      </div>
+                    </div>
+
+                    {/* Energía Card */}
+                    <div className="bg-gradient-to-br from-indigo-500/20 to-blue-500/20 border border-indigo-400/30 rounded-xl p-3 backdrop-blur-sm hover:scale-105 transition-transform">
+                      <Zap className="w-5 h-5 text-indigo-400 mx-auto mb-1.5" />
+                      <div className="text-2xl font-bold text-indigo-300">
+                        {energy}%
+                      </div>
+                      <div className="text-[10px] text-indigo-200/70 uppercase tracking-wide">
+                        Energía
+                      </div>
+                    </div>
+
+                    {/* Salud Card */}
+                    <div className="bg-gradient-to-br from-rose-500/20 to-pink-500/20 border border-rose-400/30 rounded-xl p-3 backdrop-blur-sm hover:scale-105 transition-transform">
+                      <Heart className="w-5 h-5 text-rose-400 mx-auto mb-1.5" />
+                      <div className="text-2xl font-bold text-rose-300">
+                        {health}%
+                      </div>
+                      <div className="text-[10px] text-rose-200/70 uppercase tracking-wide">
+                        Salud
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Barra de progreso destacada */}
+                  <div className="w-full mb-5 p-4 bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10">
+                    <div className="flex items-center justify-between mb-2.5">
+                      <span className="text-xs font-semibold text-white/90">
+                        Progreso al siguiente nivel
+                      </span>
+                      <span className="text-xs font-bold text-yellow-300">
+                        {xpInLevel}/{xpPerLevel} XP
+                      </span>
+                    </div>
+                    <div className="relative h-3 rounded-full bg-white/20 overflow-hidden">
+                      <div
+                        className="absolute inset-0 bg-gradient-to-r from-yellow-400 via-orange-400 to-pink-500 rounded-full transition-all duration-500"
+                        style={{ width: `${xpPercent}%` }}
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shimmer" />
+                    </div>
+                  </div>
+
+                  {/* Achievements mini showcase */}
+                  <div className="w-full flex items-center justify-center gap-3 mb-5 py-3 px-4 bg-white/5 rounded-xl border border-white/10">
+                    {achievements.slice(0, 3).map((achievement, idx) => (
+                      <div
+                        key={achievement.id}
+                        className="text-2xl opacity-90 hover:scale-110 transition-transform"
+                      >
+                        {achievement.icon}
+                      </div>
+                    ))}
+                    <div className="ml-2 text-left">
+                      <div className="text-sm font-bold text-white">
+                        {achievements.filter((a) => a.unlocked).length}
+                      </div>
+                      <div className="text-[10px] text-white/60 uppercase tracking-wide">
+                        Logros
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* CTA - Call to Action */}
+                  <div className="w-full p-4 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-xl border border-blue-400/30 backdrop-blur-sm">
+                    <div className="flex items-center justify-center gap-2 mb-2">
+                      <Share2 className="w-4 h-4 text-blue-300" />
+                      <p className="text-sm font-bold text-blue-200">
+                        ¡Comparte tu progreso!
+                      </p>
+                    </div>
+                    <p className="text-xs text-white/70 leading-relaxed">
+                      Toma un pantallazo y muestra a tus amigos cómo estás
+                      transformando tu vida.{" "}
+                      <span className="text-yellow-300 font-semibold">
+                        ¡Inspira a otros!
+                      </span>
+                    </p>
+                  </div>
+
+                  {/* Footer motivacional */}
+                  <div className="mt-5 flex items-center justify-center gap-1.5 text-[10px] text-white/50 uppercase tracking-wider">
+                    <Sparkles className="w-3 h-3" />
+                    <span>Siccus • Tu compañero de salud</span>
+                  </div>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
 
         {/* Main Content */}
@@ -163,7 +418,11 @@ export function Dashboard({ onNavigate }: DashboardProps) {
                   Completa tus tareas para ganar XP y mejorar tu salud
                 </CardDescription>
               </div>
-              <Button className="gaming-button text-white border-0" size="sm">
+              <Button
+                className="gaming-button text-white border-0"
+                size="sm"
+                onClick={() => onNavigate("missions")}
+              >
                 <Plus className="h-4 w-4 mr-2" />
                 Nueva Misión
               </Button>
