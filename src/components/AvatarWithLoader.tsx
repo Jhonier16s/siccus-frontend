@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Avatar } from "./ui/avatar";
-import GridLoader from "react-spinners/GridLoader";
+import PuffLoader from "react-spinners/PuffLoader";
 interface AvatarWithLoaderProps {
   imageUrl?: string | null;
   alt?: string;
@@ -14,9 +14,8 @@ interface AvatarWithLoaderProps {
 
 export function AvatarWithLoader({
   imageUrl,
-  alt = "Avatar",
-  className = "",
-  fallbackEmoji = "😊",
+  alt = "",  
+  className = "",  
   hasImg = false,
   loading = false,
 }: AvatarWithLoaderProps) {
@@ -41,7 +40,7 @@ export function AvatarWithLoader({
         )}
         {!loaded && (
           <div className="absolute inset-0 flex items-center justify-center bg-black/30 backdrop-blur-sm">
-            <GridLoader
+            <PuffLoader
               color="#ffffff"   // Blanco
               loading={!loaded}
               size={60}         // Tamaño del spinner
@@ -67,10 +66,10 @@ export function AvatarWithLoader({
       )}
       {!loaded && (
         <div className="absolute inset-0 flex items-center justify-center bg-black/30 backdrop-blur-sm">
-          <GridLoader
+          <PuffLoader
             color="#ffffff"   // Blanco
             loading={!loaded}
-            size={12}         // Tamaño del spinner
+            size={50}         // Tamaño del spinner
             speedMultiplier={1.2} // Velocidad
           />
         </div>
