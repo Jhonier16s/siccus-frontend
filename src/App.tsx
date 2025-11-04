@@ -4,33 +4,47 @@ import { OnboardingScreen } from './components/screens/OnboardingScreen';
 import { Dashboard } from './components/screens/Dashboard';
 import { ProfileScreen } from './components/screens/ProfileScreen';
 import { AvatarCreatorScreen } from './components/screens/AvatarCreatorScreen';
-import { RemindersScreen } from './components/screens/RemindersScreen';
 import { ProgressScreen } from './components/screens/ProgressScreen';
 import { SettingsScreen } from './components/screens/SettingsScreen';
 import { ExerciseScreen } from './components/screens/ExerciseScreen';
 import { AchievementsScreen } from './components/AchievementsScreen';
+import { MissionsScreen } from '@/components/screens/MissionsScreen';
 import { AppLayout } from './components/AppLayout';
 import { ThemeProvider } from './components/ThemeProvider';
 import { Toaster } from './components/ui/sonner';
 import { useAuthStore } from './store/authStore';
+import { useProgressStore } from './store/progressStore';
+import { getProgressSummary } from './services/progressService';
 
-type AppState = 'auth' | 'onboarding' | 'dashboard' | 'profile' | 'reminders' | 'progress' | 'exercise' | 'achievements' | 'settings' | 'avatar-creator';
+type AppState = 'auth' | 'onboarding' | 'dashboard' | 'profile' | 'missions' | 'progress' | 'exercise' | 'achievements' | 'settings' | 'avatar-creator';
 
 function AppContent() {
   const [currentScreen, setCurrentScreen] = useState<AppState>('auth');
   const [user, setUser] = useState<any>(null);
   const clearAuth = useAuthStore(s => s.clearAuth);
+  const setProgressSummary = useProgressStore(s => s.setSummary);
+  const progressSummary = useProgressStore(s => s.summary);
 
-  // Mock user stats - in a real app this would come from your data store
+  // Stats from global progress store (no valores quemados)
   const userStats = {
-    level: 12,
-    experience: 1450,
-    streak: 7
+    level: progressSummary.nivel || 1,
+    experience: progressSummary.xpTotal || 0,
+    streak: 0,
   };
 
-  const handleLogin = () => {
-    // Simulate user login
-    setUser({ name: 'Usuario', isNewUser: true });
+  const handleLogin = async () => {
+    // Después de login (AuthScreen ya colocó token/usuario en el store)
+    const authUser = useAuthStore.getState().user as any;
+    const userId = Number(authUser?.id ?? authUser?.id_usuario);
+    if (userId) {
+      try {
+        const summary = await getProgressSummary(userId);
+        setProgressSummary(summary);
+      } catch (e) {
+        console.error('No se pudo cargar el progreso del usuario:', e);
+      }
+    }
+    setUser(authUser || { name: 'Usuario' });
     setCurrentScreen('onboarding');
   };
 
@@ -41,6 +55,7 @@ function AppContent() {
   const handleLogout = () => {
     setUser(null);
     clearAuth();
+    useProgressStore.getState().clear();
     setCurrentScreen('auth');
   };
 
@@ -90,8 +105,8 @@ function AppContent() {
       case 'profile':
         return <ProfileScreen onOpenAvatarCreator={() => setCurrentScreen('avatar-creator')} />;
         
-      case 'reminders':
-        return <RemindersScreen />;
+      case 'missions':
+        return <MissionsScreen />;
         
       case 'progress':
         return <ProgressScreen />;

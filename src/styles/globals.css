@@ -407,3 +407,22 @@ html {
   outline: 2px solid #60a5fa;
   outline-offset: 2px;
 }
+
+/* Animaciones gamificadas para el modal de compartir */
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.animate-shimmer {
+  animation: shimmer 2s infinite;
+}
+
+/* Delay para animaciones escalonadas */
+.delay-75 {
+  animation-delay: 75ms;
+}

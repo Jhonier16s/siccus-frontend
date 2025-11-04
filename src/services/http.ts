@@ -49,3 +49,15 @@ export async function httpPost<T = any>(path: string, body: any): Promise<T> {
   }
   return json as T;
 }
+
+export async function httpDelete<T = any>(path: string): Promise<T> {
+  const res = await fetch(`${API_BASE}${path}`, {
+    method: 'DELETE',
+    headers: authHeaders(),
+  });
+  const json = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error((json as any)?.message || 'Error en la solicitud');
+  }
+  return json as T;
+}
