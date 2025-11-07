@@ -83,9 +83,8 @@ export function AuthScreen({ onLogin }: AuthScreenProps) {
         {/* Logo and Header */}
         <div className="text-center mb-8">
           <div className="mb-4">
-            <img src={logo} alt="Siccus Logo" className="h-16 w-16 object-contain mx-auto" />
+            <img src={logo} alt="Siccus Logo" className="h-17 w-18 object-contain mx-auto" />
           </div>
-          <h1 className="text-blue-primary mb-2">Siccus</h1>
           <p className="text-gray-medium">Tu aventura hacia una vida saludable</p>
         </div>
 
