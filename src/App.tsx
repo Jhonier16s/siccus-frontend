@@ -36,6 +36,7 @@ function AppContent() {
     // Después de login (AuthScreen ya colocó token/usuario en el store)
     const authUser = useAuthStore.getState().user as any;
     const userId = Number(authUser?.id ?? authUser?.id_usuario);
+    const readyOnboarding = authUser?.onboardingCompleto ?? false
     if (userId) {
       try {
         const summary = await getProgressSummary(userId);
@@ -45,7 +46,12 @@ function AppContent() {
       }
     }
     setUser(authUser || { name: 'Usuario' });
-    setCurrentScreen('onboarding');
+    if (readyOnboarding) {
+      setCurrentScreen("dashboard")
+    }
+    else{
+      setCurrentScreen('onboarding')
+    };
   };
 
   const handleOnboardingComplete = () => {
