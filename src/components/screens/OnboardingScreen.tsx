@@ -296,16 +296,6 @@ export function OnboardingScreen({ onComplete }: OnboardingScreenProps) {
             <div className="inline-flex items-center justify-center w-12 h-12 bg-blue-primary rounded-xl text-white dark:text-background">
               {currentStepData.icon}
             </div>
-            <div className="flex-1 flex justify-end">
-              <Button
-                variant="ghost"
-                onClick={handleSkip}
-                className="text-gray-medium hover:text-blue-primary hover:bg-gray-100 dark:hover:bg-slate-800 p-2"
-              >
-                <X className="h-4 w-4 mr-1" />
-                Omitir
-              </Button>
-            </div>
           </div>
           <h1 className="text-blue-primary mb-2">Configuración Inicial</h1>
           <p className="text-muted-foreground mb-6">Paso {currentStep + 1} de {totalSteps}</p>
