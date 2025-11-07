@@ -7,16 +7,19 @@ import { RadioGroup, RadioGroupItem } from '.././ui/radio-group';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.././ui/select';
 import { Progress } from '.././ui/progress';
 import { ChevronRight, ChevronLeft, Target, Activity, Calendar, Ruler, Weight, X } from 'lucide-react';
+import { createProfileHealthUser } from '@/services/profileHealtUser';
+import { useAuthStore } from '@/store/authStore';
+import { toast } from 'sonner@2.0.3';
 
 interface OnboardingScreenProps {
   onComplete: () => void;
 }
 
 interface OnboardingData {
-  age: string;
+  age: number;
   gender: string;
   height: string;
-  weight: string;
+  weight: number;
   activityLevel: string;
   goal: string;
 }
@@ -24,10 +27,10 @@ interface OnboardingData {
 export function OnboardingScreen({ onComplete }: OnboardingScreenProps) {
   const [currentStep, setCurrentStep] = useState(0);
   const [data, setData] = useState<OnboardingData>({
-    age: '',
+    age: 0,
     gender: '',
     height: '',
-    weight: '',
+    weight: 0,
     activityLevel: '',
     goal: ''
   });
@@ -35,11 +38,31 @@ export function OnboardingScreen({ onComplete }: OnboardingScreenProps) {
   const totalSteps = 4;
   const progress = ((currentStep + 1) / totalSteps) * 100;
 
-  const handleNext = () => {
+  const authUser = useAuthStore(s => s.user);
+  const userId = Number((authUser as any)?.id ?? (authUser as any)?.id_usuario);
+
+
+  const handleSaveData = async() => {
+    const response = await createProfileHealthUser({
+      idUsuario: userId,
+      edad: data.age,
+      peso: data.weight,
+        altura: Number(data.height),
+      objetivo: data.goal,
+    })
+    return response;
+  }
+
+  const handleNext = async() => {
     if (currentStep < totalSteps - 1) {
       setCurrentStep(currentStep + 1);
     } else {
-      onComplete();
+      let response = await handleSaveData()
+      if (response) {
+        onComplete();
+      } else {
+        toast.error('Error al guardar la información. Por favor, intenta de nuevo.');
+      }
     }
   };
 
