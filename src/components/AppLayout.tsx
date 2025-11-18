@@ -47,10 +47,7 @@ export function AppLayout({
                 onNavigate={onNavigate}
                 onLogout={onLogout}
                 userStats={userStats}
-              />
-              <div>
-                <img src={logo} alt="Siccus Logo" className="h-8 w-8 object-contain" />
-              </div>
+              />              
               <AvatarWithLoader imageUrl={avatarUrl} loading={isUserLoading} className="w-8 h-8 rounded-full" />
               <div>
                 <h1 className="text-blue-primary">Siccus</h1>

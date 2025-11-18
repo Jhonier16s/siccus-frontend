@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Button } from ".././ui/button";
 import {
   Card,
@@ -131,25 +131,25 @@ export function Dashboard({ onNavigate }: DashboardProps) {
   const totalXP = dailyTasks
     .filter((task) => task.completed)
     .reduce((sum, task) => sum + task.xp, 0);
-
   return (
     <div className="max-w-6xl mx-auto p-4 space-y-8">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Avatar Column */}
         <div className="lg:col-span-1">
-          <button
-            type="button"
-            title="Personalizar avatar"
-            onClick={() => onNavigate("avatar-creator")}
-            className="group relative flex items-center justify-center mx-auto w-40 h-40 rounded-xl overflow-hidden border border-border transition-all duration-200 cursor-pointer hover:border-blue-primary hover:shadow-[0_0_0_3px_rgba(59,130,246,0.45)] focus:outline-none focus:ring-2 focus:ring-blue-primary/60"
-          >
-            <AvatarWithLoader
-              hasImg
-              imageUrl={avatarImageUrl || undefined}
-              loading={isUserLoading}
-              className="w-full h-full"
-            />
-          </button>
+
+            <button
+              type="button"
+              title="Personalizar avatar"
+              onClick={() => onNavigate("avatar-creator")}
+              className="group relative flex items-center justify-center mx-auto w-40 h-40 rounded-xl overflow-hidden border border-border transition-all duration-200 cursor-pointer hover:border-blue-primary hover:shadow-[0_0_0_3px_rgba(59,130,246,0.45)] focus:outline-none focus:ring-2 focus:ring-blue-primary/60"
+            >
+              <AvatarWithLoader
+                hasImg
+                imageUrl={avatarImageUrl || undefined}
+                loading={isUserLoading}
+                className="w-full h-full"
+              />
+            </button>
 
           {/* Player Stats (gamified) */}
           <Card className="gaming-card mt-6">

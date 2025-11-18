@@ -76,14 +76,7 @@ export function AppDrawer({
         <div className="flex flex-col h-full">
           {/* Header */}
           <SheetHeader className="p-6 bg-header border-b border-border">
-            <div className="flex items-center space-x-3 mb-4">
-              <div>
-                <img
-                  src={logo}
-                  alt="Siccus Logo"
-                  className="h-10 w-10 object-contain"
-                />
-              </div>
+            <div className="flex items-center space-x-3 mb-4">              
               <div>
                 <SheetTitle className="text-blue-primary">Siccus</SheetTitle>
                 <p className="text-muted-foreground text-sm">
