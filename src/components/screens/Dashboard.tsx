@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from ".././ui/button";
 import {
   Card,
@@ -33,6 +33,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from ".././ui/dialog";
+import { getUserAchievements } from "../../services/achievementsService";
 
 interface DashboardProps {
   onNavigate: (view: string) => void;
@@ -291,6 +292,8 @@ const AI_ROUTINE_LIBRARY: Record<AiProfileKey, AiRoutineProfile> = {
 export function Dashboard({ onNavigate }: DashboardProps) {
   const authUser = useAuthStore((s) => s.user);
   const storedAvatar = (authUser?.avatarUrl as string) || "";
+  console.log("🔍 authUser en Dashboard:", authUser);
+  console.log("🔍 authUser?.id:", authUser?.id);
   const avatarImageUrl = getRpmImageUrl(storedAvatar);
   const isUserLoading = useAuthStore((s) => s.isUserLoading);
   const displayName =
@@ -323,32 +326,33 @@ export function Dashboard({ onNavigate }: DashboardProps) {
       : 0;
   const aiProfile = AI_ROUTINE_LIBRARY[aiProfileKey];
 
-  const [achievements] = useState([
-    {
-      id: 1,
-      title: "Primera Semana",
-      icon: "🎯",
-      unlocked: true,
-    },
-    {
-      id: 2,
-      title: "Caminante Dedicado",
-      icon: "🚶",
-      unlocked: true,
-    },
-    {
-      id: 3,
-      title: "Hidratación Pro",
-      icon: "💧",
-      unlocked: true,
-    },
-    {
-      id: 4,
-      title: "Atleta Principiante",
-      icon: "🏃",
-      unlocked: false,
-    },
-  ]);
+  // LOGROS DINÁMICOS DESDE BACKEND
+const [achievements, setAchievements] = useState<any[]>([]);
+  // Fetch de logros del usuario
+  useEffect(() => {
+    const fetchAchievements = async () => {
+      if (!authUser?.id_usuario) return;  // ← Cambio aquí
+
+      try {
+        console.log("Fetching achievements for user:", authUser.id_usuario);  // ← Y aquí
+        const response = await fetch(
+          `http://localhost:3000/logros/usuario/${authUser.id_usuario}`  // ← Y aquí
+        );
+
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+        const data = await response.json();
+        console.log("✅ Achievements:", data);
+        setAchievements(data);
+      } catch (error) {
+        console.error("❌ Error:", error);
+        setAchievements([]);
+      }
+    };
+
+    fetchAchievements();
+  }, [authUser?.id_usuario]);  // ← Y aquí en la dependencia
+
 
   return (
     <div className="max-w-6xl mx-auto p-4 space-y-8">
@@ -578,17 +582,17 @@ export function Dashboard({ onNavigate }: DashboardProps) {
 
                   {/* Achievements mini showcase */}
                   <div className="w-full flex items-center justify-center gap-3 mb-5 py-3 px-4 bg-white/5 rounded-xl border border-white/10">
-                    {achievements.slice(0, 3).map((achievement, idx) => (
+                    {achievements.slice(0, 3).map((ach: any, idx) => (
                       <div
-                        key={achievement.id}
+                        key={ach.id_logro_usuario || idx}
                         className="text-2xl opacity-90 hover:scale-110 transition-transform"
                       >
-                        {achievement.icon}
+                        {ach.logro?.icono || "🏆"}
                       </div>
                     ))}
                     <div className="ml-2 text-left">
                       <div className="text-sm font-bold text-white">
-                        {achievements.filter((a) => a.unlocked).length}
+                        {achievements.filter((a: any) => a.fecha_obtenido).length}
                       </div>
                       <div className="text-[10px] text-white/60 uppercase tracking-wide">
                         Logros
@@ -704,7 +708,7 @@ export function Dashboard({ onNavigate }: DashboardProps) {
             </CardContent>
           </Card>
 
-          {/* Achievements */}
+          {/* Achievements - DINÁMICO DESDE BACKEND */}
           <Card className="gaming-card">
             <CardHeader>
               <CardTitle className="text-blue-primary">
@@ -715,44 +719,50 @@ export function Dashboard({ onNavigate }: DashboardProps) {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {achievements.map((achievement) => (
-                  <div
-                    key={achievement.id}
-                    className={`text-center p-4 rounded-lg border transition-all cursor-pointer ${
-                      achievement.unlocked
-                        ? "bg-yellow-50 border-yellow-200 dark:bg-yellow-900/20 dark:border-yellow-800 hover:shadow-lg"
-                        : "bg-muted border-border opacity-60"
-                    }`}
-                    onClick={() =>
-                      achievement.unlocked && onNavigate("achievements")
-                    }
-                  >
-                    <div className="text-3xl mb-2">{achievement.icon}</div>
-                    <h5 className="text-blue-primary mb-1 text-sm">
-                      {achievement.title}
-                    </h5>
-                    {achievement.unlocked && (
-                      <Badge className="bg-yellow-500 text-white text-xs">
-                        <Trophy className="h-3 w-3 mr-1" />
-                        Desbloqueado
-                      </Badge>
-                    )}
-                  </div>
-                ))}
-              </div>
-              {achievements.some((a) => a.unlocked) && (
-                <div className="mt-6 text-center">
-                  <Button
-                    variant="outline"
-                    onClick={() => onNavigate("achievements")}
-                    className="border-blue-primary text-blue-primary hover:bg-blue-primary hover:text-white transition-colors"
-                  >
-                    Ver todos los logros
-                  </Button>
-                </div>
-              )}
-            </CardContent>
+  <p className="text-sm text-gray-500 mb-4">
+    Logros cargados: {achievements.length}
+  </p>
+
+  {achievements.length === 0 ? (
+    <div className="col-span-4 text-center text-muted-foreground py-6">
+      No tienes logros aún...
+    </div>
+  ) : (
+    <>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {achievements.slice(0, 4).map((achievement: any) => (
+          <div
+            key={achievement.id_logro_usuario}
+            className="text-center p-4 rounded-lg border bg-yellow-50 border-yellow-200 dark:bg-yellow-900/20 dark:border-yellow-800 hover:shadow-lg transition-all cursor-pointer"
+            onClick={() => onNavigate("achievements")}
+          >
+            <div className="text-3xl mb-2">
+              {achievement.logro?.icono || "🏆"}
+            </div>
+            <h5 className="text-blue-primary mb-1 text-sm font-semibold">
+              {achievement.logro?.nombre || "Logro"}
+            </h5>
+            <Badge className="bg-yellow-500 text-white text-xs">
+              <Trophy className="h-3 w-3 mr-1" />
+              +{achievement.logro?.puntos_xp || 0} XP
+            </Badge>
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-6 text-center">
+        <Button
+          variant="outline"
+          onClick={() => onNavigate("achievements")}
+          className="border-blue-primary text-blue-primary hover:bg-blue-primary hover:text-white transition-colors"
+        >
+          Ver todos los logros
+        </Button>
+      </div>
+    </>
+  )}
+</CardContent>
+
           </Card>
         </div>
       </div>
