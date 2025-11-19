@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 import { Button } from ".././ui/button";
 import {
   Card,
@@ -13,16 +13,16 @@ import { useAuthStore } from "../../store/authStore";
 import { getRpmImageUrl } from "../../utils/avatar";
 import {
   Trophy,
-  Target,
-  TrendingUp,
   Award,
-  Plus,
+  Target,
   Heart,
   Zap,
   Share2,
   Sparkles,
   Flame,
   Star,
+  Clock3,
+  CalendarDays,
 } from "lucide-react";
 import { useProgressStore } from "@/store/progressStore";
 import { Progress } from "../ui/progress";
@@ -37,6 +37,256 @@ import {
 interface DashboardProps {
   onNavigate: (view: string) => void;
 }
+
+type AiProfileKey = 0 | 1 | 2 | 3 | 4;
+
+const ROUTINE_ICON_MAP = {
+  spark: Sparkles,
+  flame: Flame,
+  heart: Heart,
+  zap: Zap,
+  star: Star,
+  target: Target,
+  trophy: Trophy,
+  award: Award,
+};
+
+type RoutineIcon = keyof typeof ROUTINE_ICON_MAP;
+
+type AiRoutine = {
+  id: string;
+  title: string;
+  focus: string;
+  details: string;
+  duration: string;
+  frequency: string;
+  intensity: "Baja" | "Media" | "Alta";
+  equipment?: string;
+  icon: RoutineIcon;
+};
+
+type AiRoutineProfile = {
+  label: string;
+  description: string;
+  recommendation: string;
+  routines: AiRoutine[];
+};
+
+const AI_ROUTINE_LIBRARY: Record<AiProfileKey, AiRoutineProfile> = {
+  0: {
+    label: "Saludables / activos",
+    description: "Perfil con hábitos estables y buena actividad física.",
+    recommendation:
+      "Mantén la rutina y monitorea cambios de peso trimestralmente.",
+    routines: [
+      {
+        id: "0-1",
+        title: "Circuito full-body ligero",
+        focus: "Mantenimiento metabólico",
+        details:
+          "3 rondas con planchas, sentadillas y remo con banda para conservar tono sin fatiga.",
+        duration: "25 min",
+        frequency: "3-4x semana",
+        intensity: "Media",
+        equipment: "Bandas o peso corporal",
+        icon: "trophy",
+      },
+      {
+        id: "0-2",
+        title: "HIIT expres",
+        focus: "Zona aeróbica alta",
+        details:
+          "Intervalos 40/20 con saltos suaves, mountain climbers y burpees controlados.",
+        duration: "18 min",
+        frequency: "2x semana",
+        intensity: "Alta",
+        equipment: "Sin equipamiento",
+        icon: "flame",
+      },
+      {
+        id: "0-3",
+        title: "Yoga de recuperación",
+        focus: "Movilidad + respiración",
+        details:
+          "Flujo guiado para descargar articulaciones y mejorar la variabilidad cardiaca.",
+        duration: "30 min",
+        frequency: "1-2x semana",
+        intensity: "Baja",
+        icon: "spark",
+      },
+    ],
+  },
+  1: {
+    label: "Riesgo genético + poca actividad",
+    description: "Personas con antecedente familiar y baja frecuencia de ejercicio.",
+    recommendation:
+      "Refuerza la actividad aeróbica 3-4 días/semana y revisa antecedentes clínicos.",
+    routines: [
+      {
+        id: "1-1",
+        title: "Caminata consciente",
+        focus: "Base aeróbica",
+        details:
+          "Bloques de 10 min con control de respiración para elevar pulsaciones sin riesgo.",
+        duration: "30 min",
+        frequency: "4x semana",
+        intensity: "Baja",
+        icon: "star",
+      },
+      {
+        id: "1-2",
+        title: "Fuerza guiada",
+        focus: "Protección articular",
+        details:
+          "Circuito con silla/bandas enfocando tren inferior y core para mejorar estabilidad.",
+        duration: "20 min",
+        frequency: "3x semana",
+        intensity: "Media",
+        equipment: "Bandas livianas",
+        icon: "target",
+      },
+      {
+        id: "1-3",
+        title: "Respiración + movilidad",
+        focus: "Regulación del estrés",
+        details:
+          "Secuencia de cat-cow, puente y estiramientos torácicos alineados con respiración diafragmática.",
+        duration: "15 min",
+        frequency: "Diario",
+        intensity: "Baja",
+        icon: "heart",
+      },
+    ],
+  },
+  2: {
+    label: "Riesgo moderado, baja actividad",
+    description:
+      "Consumo de agua aceptable pero poca actividad física sostenida.",
+    recommendation:
+      "Planifica caminatas diarias de 30 min y ajusta porciones.",
+    routines: [
+      {
+        id: "2-1",
+        title: "Caminata progresiva",
+        focus: "Adherencia diaria",
+        details:
+          "Bloques de 5 min + 1 min de pausa activa hasta llegar a 30 min totales.",
+        duration: "30 min",
+        frequency: "Diario",
+        intensity: "Baja",
+        icon: "star",
+      },
+      {
+        id: "2-2",
+        title: "Fuerza básica",
+        focus: "Tonificación inicial",
+        details:
+          "3 series de sentadillas asistidas, remo con banda y press de pared.",
+        duration: "20 min",
+        frequency: "3x semana",
+        intensity: "Media",
+        equipment: "Banda ligera",
+        icon: "trophy",
+      },
+      {
+        id: "2-3",
+        title: "Core + hidratación",
+        focus: "Estabilidad postural",
+        details:
+          "Plancha apoyada, dead bug y bird-dog sincronizados con recordatorio de hidratación.",
+        duration: "15 min",
+        frequency: "2x semana",
+        intensity: "Media",
+        icon: "zap",
+      },
+    ],
+  },
+  3: {
+    label: "Casos más severos",
+    description:
+      "Peso corporal elevado y combinación de hábitos desfavorables.",
+    recommendation:
+      "Consulta médica/nutricional prioritaria y seguimiento mensual del IMC.",
+    routines: [
+      {
+        id: "3-1",
+        title: "Marcha asistida",
+        focus: "Baja carga articular",
+        details:
+          "Series de 3 min caminando + 2 min respirando sentado para controlar pulsaciones.",
+        duration: "25 min",
+        frequency: "5x semana",
+        intensity: "Baja",
+        icon: "star",
+      },
+      {
+        id: "3-2",
+        title: "Movilidad en silla",
+        focus: "Reactivar tejido",
+        details:
+          "Rutina sentada con elevaciones de piernas, empujes isométricos y rotaciones suaves.",
+        duration: "15 min",
+        frequency: "Diario",
+        intensity: "Baja",
+        equipment: "Silla estable",
+        icon: "heart",
+      },
+      {
+        id: "3-3",
+        title: "Fuerza asistida",
+        focus: "Control motor",
+        details:
+          "Apoyos en pared, levantarse de la silla y remo con banda larga para ganar fuerza básica.",
+        duration: "18 min",
+        frequency: "3x semana",
+        intensity: "Baja",
+        icon: "target",
+      },
+    ],
+  },
+  4: {
+    label: "Sedentarios + malos hábitos",
+    description: "Baja actividad física y consumo de agua limitado.",
+    recommendation:
+      "Incorpora rutinas ligeras (FAF ≥ 2) y metas de hidratación (≥ 5 vasos/día).",
+    routines: [
+      {
+        id: "4-1",
+        title: "Activación matutina",
+        focus: "Romper el sedentarismo",
+        details:
+          "Secuencia de movilidad articular completa + respiración cuadrada para iniciar el día.",
+        duration: "12 min",
+        frequency: "Diario",
+        intensity: "Baja",
+        icon: "spark",
+      },
+      {
+        id: "4-2",
+        title: "Mini circuito FAF",
+        focus: "Gasto calórico ligero",
+        details:
+          "Bloques de 45 seg con jumping jacks adaptados, step touch y sentadillas al aire.",
+        duration: "20 min",
+        frequency: "3x semana",
+        intensity: "Media",
+        equipment: "Peso corporal",
+        icon: "zap",
+      },
+      {
+        id: "4-3",
+        title: "Caminar + hidratar",
+        focus: "Hábitos duales",
+        details:
+          "Recordatorios de 5 vasos de agua repartidos en pausas de caminata suave.",
+        duration: "Todo el día",
+        frequency: "Objetivo diario",
+        intensity: "Baja",
+        icon: "heart",
+      },
+    ],
+  },
+};
 
 export function Dashboard({ onNavigate }: DashboardProps) {
   const authUser = useAuthStore((s) => s.user);
@@ -58,47 +308,20 @@ export function Dashboard({ onNavigate }: DashboardProps) {
   );
   const energy = Math.min(100, Math.max(0, progress.energiaTotal || 0));
   const health = Math.min(100, Math.max(0, progress.saludTotal || 0));
-  const [userStats] = useState({
-    level,
-    health,
-    energy,
-    experience: xpTotal,
-    streak: 0,
-    weeklyGoal: 75,
-  });
-
-  const [dailyTasks] = useState([
-    {
-      id: 1,
-      title: "Beber 8 vasos de agua",
-      completed: true,
-      xp: 50,
-    },
-    {
-      id: 2,
-      title: "Caminar 10,000 pasos",
-      completed: true,
-      xp: 100,
-    },
-    {
-      id: 3,
-      title: "Ejercicio 30 minutos",
-      completed: false,
-      xp: 150,
-    },
-    {
-      id: 4,
-      title: "Comer 5 porciones de frutas/verduras",
-      completed: false,
-      xp: 80,
-    },
-    {
-      id: 5,
-      title: "Dormir 8 horas",
-      completed: false,
-      xp: 120,
-    },
-  ]);
+  const rawAiProfileType = authUser?.aiProfileType ?? authUser?.riskProfile;
+  const parsedAiProfile =
+    typeof rawAiProfileType === "string"
+      ? Number.parseInt(rawAiProfileType, 10)
+      : rawAiProfileType;
+  // Se utiliza el perfil entregado por la IA (0-4). Mientras no exista, asumimos el más saludable.
+  const aiProfileKey: AiProfileKey =
+    typeof parsedAiProfile === "number" &&
+    Number.isInteger(parsedAiProfile) &&
+    parsedAiProfile >= 0 &&
+    parsedAiProfile <= 4
+      ? (parsedAiProfile as AiProfileKey)
+      : 0;
+  const aiProfile = AI_ROUTINE_LIBRARY[aiProfileKey];
 
   const [achievements] = useState([
     {
@@ -127,10 +350,6 @@ export function Dashboard({ onNavigate }: DashboardProps) {
     },
   ]);
 
-  const completedTasks = dailyTasks.filter((task) => task.completed).length;
-  const totalXP = dailyTasks
-    .filter((task) => task.completed)
-    .reduce((sum, task) => sum + task.xp, 0);
   return (
     <div className="max-w-6xl mx-auto p-4 space-y-8">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -407,76 +626,81 @@ export function Dashboard({ onNavigate }: DashboardProps) {
 
         {/* Main Content */}
         <div className="lg:col-span-2 space-y-8">
-          {/* Daily Tasks */}
+          {/* AI Recommended Routines */}
           <Card className="gaming-card">
-            <CardHeader className="flex flex-row items-center justify-between">
+            <CardHeader className="pb-4">
               <div>
-                <CardTitle className="text-blue-primary">
-                  Misiones Diarias
+                <p className="text-xs uppercase tracking-wider text-blue-primary/70 mb-1">
+                  Recomendaciones según tu perfil
+                </p>
+                <CardTitle className="text-xl font-semibold text-foreground">
+                  Rutinas asistidas por IA
                 </CardTitle>
-                <CardDescription className="text-muted-foreground">
-                  Completa tus tareas para ganar XP y mejorar tu salud
+                <CardDescription className="text-sm text-muted-foreground mt-1">
+                  Acciones diseñadas para sostener tu progreso sin saturarte.
                 </CardDescription>
               </div>
-              <Button
-                className="gaming-button text-white border-0"
-                size="sm"
-                onClick={() => onNavigate("missions")}
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Nueva Misión
-              </Button>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              {dailyTasks.map((task) => (
-                <div
-                  key={task.id}
-                  className={`flex items-center justify-between p-4 rounded-lg border transition-all ${
-                    task.completed
-                      ? "bg-green-50 border-green-200 dark:bg-green-900/20 dark:border-green-800"
-                      : "bg-card border-border hover:border-blue-primary"
-                  }`}
-                >
-                  <div className="flex items-center space-x-3">
-                    <div
-                      className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
-                        task.completed
-                          ? "bg-green-500 border-green-500"
-                          : "border-border"
-                      }`}
-                    >
-                      {task.completed && (
-                        <svg
-                          className="w-3 h-3 text-white"
-                          fill="currentColor"
-                          viewBox="0 0 20 20"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                      )}
-                    </div>
-                    <span
-                      className={
-                        task.completed
-                          ? "text-green-700 dark:text-green-300 line-through"
-                          : "text-foreground"
-                      }
-                    >
-                      {task.title}
-                    </span>
-                  </div>
-                  <Badge
-                    variant={task.completed ? "secondary" : "outline"}
-                    className="bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-300"
-                  >
-                    +{task.xp} XP
+              <div className="rounded-2xl border border-blue-primary/20 bg-blue-primary/5 p-4 mt-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <Badge className="bg-blue-primary text-white border-0 text-xs">
+                    {aiProfile.label}
                   </Badge>
+                  <span className="text-xs text-muted-foreground">{aiProfile.description}</span>
                 </div>
-              ))}
+                <p className="text-xs text-foreground/90">
+                  {aiProfile.recommendation}
+                </p>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-3 pt-2">
+              {aiProfile.routines.map((routine) => {
+                const RoutineIcon = ROUTINE_ICON_MAP[routine.icon] || Sparkles;
+                return (
+                  <div
+                    key={routine.id}
+                    className="group relative overflow-hidden rounded-2xl border border-border bg-card p-4 transition-all duration-200 hover:border-blue-primary/50 hover:shadow-md"
+                  >
+                    <div className="flex items-start gap-4">
+                      <div className="flex-shrink-0 rounded-xl bg-blue-primary/10 p-2.5 text-blue-primary">
+                        <RoutineIcon className="h-5 w-5" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-start justify-between gap-3 mb-2">
+                          <div>
+                            <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-0.5">
+                              {routine.focus}
+                            </p>
+                            <h4 className="text-base font-semibold text-foreground">
+                              {routine.title}
+                            </h4>
+                          </div>
+                          <Badge className="flex-shrink-0 bg-blue-primary/10 text-blue-primary border-transparent text-xs">
+                            {routine.intensity}
+                          </Badge>
+                        </div>
+                        <p className="text-sm text-muted-foreground leading-relaxed mb-3">
+                          {routine.details}
+                        </p>
+                        <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
+                          <span className="inline-flex items-center gap-1.5">
+                            <Clock3 className="h-3.5 w-3.5" />
+                            {routine.duration}
+                          </span>
+                          <span className="inline-flex items-center gap-1.5">
+                            <CalendarDays className="h-3.5 w-3.5" />
+                            {routine.frequency}
+                          </span>
+                          {routine.equipment && (
+                            <span className="text-foreground/70">
+                              • Equipo: {routine.equipment}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
             </CardContent>
           </Card>
 
