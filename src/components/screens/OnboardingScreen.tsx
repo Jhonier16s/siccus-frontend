@@ -67,6 +67,7 @@ export function OnboardingScreen({ onComplete }: OnboardingScreenProps) {
   const progress = ((currentStep + 1) / totalSteps) * 100;
 
   const authUser = useAuthStore((s) => s.user);
+  const setUser = useAuthStore((s) => s.setUser);
   const userId = Number((authUser as any)?.id ?? (authUser as any)?.id_usuario);
 
   const handleSaveData = async () => {
@@ -76,6 +77,15 @@ export function OnboardingScreen({ onComplete }: OnboardingScreenProps) {
       moderate: 3,
       active: 4,
     };
+    
+    // Mapear el rango de agua a valores 1-3 para el modelo CH20_A
+    const waterIntakeMap: { [key: string]: number } = {
+      "1-2": 1,  // Muy poca agua
+      "3-5": 2,  // Moderada
+      "6+": 3,   // Adecuada
+    };
+    const waterIntakeValue = waterIntakeMap[data.waterIntake] || 2;
+    
     const response = await createProfileHealthUser({
       idUsuario: userId,
       edad: data.age,
@@ -85,7 +95,7 @@ export function OnboardingScreen({ onComplete }: OnboardingScreenProps) {
       genero: data.gender,
       imc: 0,
       antecedenteSobrepeso: data.overweightHistory === "yes" ? 1 : 0,
-      aguaCh20A: Number(data.waterIntake) || 0,
+      aguaCh20A: waterIntakeValue,
       nivelActividad: activityLevelMap[data.activityLevel] || 1,
     });
     return response;
@@ -102,6 +112,18 @@ export function OnboardingScreen({ onComplete }: OnboardingScreenProps) {
           new Promise((resolve) => setTimeout(resolve, 3000)),
         ]);
         if (response) {
+          // Guardar el perfil de salud en el store
+          if (response.perfilModelo) {
+            const healthProfile = {
+              cluster: response.perfilModelo.cluster,
+              perfilModelo: response.perfilModelo,
+            };
+            setUser({
+              ...authUser,
+              healthProfile,
+              perfilSalud: healthProfile,
+            });
+          }
           onComplete();
         } else {
           toast.error(
@@ -243,19 +265,36 @@ export function OnboardingScreen({ onComplete }: OnboardingScreenProps) {
         <div className="space-y-6">
           <div className="space-y-2">
             <Label htmlFor="water-intake">
-              ¿Cuánta agua tomas al día? (vasos)
+              ¿Cuánta agua tomas al día?
             </Label>
-            <div className="relative">
-              <Input
-                id="water-intake"
-                type="number"
-                min="0"
-                placeholder="8"
-                value={data.waterIntake}
-                onChange={(e) => updateData("waterIntake", e.target.value)}
-                className="border-gray-300 focus:border-blue-primary"
-              />
-            </div>
+            <Select
+              value={data.waterIntake}
+              onValueChange={(value) => updateData("waterIntake", value)}
+            >
+              <SelectTrigger className="border-gray-300 focus:border-blue-primary">
+                <SelectValue placeholder="Selecciona tu consumo de agua" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="1-2">
+                  <div className="flex flex-col">
+                    <span className="font-medium">Muy poca agua</span>
+                    <span className="text-xs text-muted-foreground">1-2 vasos al día</span>
+                  </div>
+                </SelectItem>
+                <SelectItem value="3-5">
+                  <div className="flex flex-col">
+                    <span className="font-medium">Moderada</span>
+                    <span className="text-xs text-muted-foreground">3-5 vasos al día</span>
+                  </div>
+                </SelectItem>
+                <SelectItem value="6+">
+                  <div className="flex flex-col">
+                    <span className="font-medium">Adecuada</span>
+                    <span className="text-xs text-muted-foreground">6 o más vasos al día</span>
+                  </div>
+                </SelectItem>
+              </SelectContent>
+            </Select>
           </div>
           <div className="space-y-3">
             <Label>¿Has tenido antecedentes de sobrepeso?</Label>

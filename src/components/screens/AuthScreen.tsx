@@ -48,7 +48,21 @@ export function AuthScreen({ onLogin }: AuthScreenProps) {
         setLoginError('No se recibió token de autenticación');
         return;
       }
-      const user = res.user || null;
+      let user = res.user || null;
+      
+      // Guardar el perfil de salud si viene en la respuesta
+      if (user && res.perfilSalud) {
+        const healthProfile = {
+          cluster: res.perfilSalud.perfilModelo?.cluster,
+          perfilModelo: res.perfilSalud.perfilModelo,
+        };
+        user = {
+          ...user,
+          healthProfile,
+          perfilSalud: res.perfilSalud,
+        };
+      }
+      
       setAuth({ token, user });
       toast.success(`Bienvenido${res?.user?.nombre ? ', ' + res.user.nombre : ''}`);
       onLogin();

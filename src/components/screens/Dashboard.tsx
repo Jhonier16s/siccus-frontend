@@ -8,6 +8,7 @@ import {
   CardTitle,
 } from ".././ui/card";
 import { Badge } from ".././ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from ".././ui/dialog";
 import { AvatarWithLoader } from ".././AvatarWithLoader";
 import { useAuthStore } from "../../store/authStore";
 import { getRpmImageUrl } from "../../utils/avatar";
@@ -23,16 +24,11 @@ import {
   Star,
   Clock3,
   CalendarDays,
+  PlayCircle,
+  CirclePause,
 } from "lucide-react";
 import { useProgressStore } from "@/store/progressStore";
 import { Progress } from "../ui/progress";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from ".././ui/dialog";
 
 interface DashboardProps {
   onNavigate: (view: string) => void;
@@ -63,6 +59,8 @@ type AiRoutine = {
   intensity: "Baja" | "Media" | "Alta";
   equipment?: string;
   icon: RoutineIcon;
+  image?: string;
+  color: string;
 };
 
 type AiRoutineProfile = {
@@ -90,6 +88,8 @@ const AI_ROUTINE_LIBRARY: Record<AiProfileKey, AiRoutineProfile> = {
         intensity: "Media",
         equipment: "Bandas o peso corporal",
         icon: "trophy",
+        image: "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&h=250&fit=crop",
+        color: "orange",
       },
       {
         id: "0-2",
@@ -102,6 +102,8 @@ const AI_ROUTINE_LIBRARY: Record<AiProfileKey, AiRoutineProfile> = {
         intensity: "Alta",
         equipment: "Sin equipamiento",
         icon: "flame",
+        image: "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=400&h=250&fit=crop",
+        color: "sky",
       },
       {
         id: "0-3",
@@ -113,6 +115,8 @@ const AI_ROUTINE_LIBRARY: Record<AiProfileKey, AiRoutineProfile> = {
         frequency: "1-2x semana",
         intensity: "Baja",
         icon: "spark",
+        image: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400&h=250&fit=crop",
+        color: "purple",
       },
     ],
   },
@@ -132,6 +136,8 @@ const AI_ROUTINE_LIBRARY: Record<AiProfileKey, AiRoutineProfile> = {
         frequency: "4x semana",
         intensity: "Baja",
         icon: "star",
+        image: "https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?w=400&h=250&fit=crop",
+        color: "emerald",
       },
       {
         id: "1-2",
@@ -144,6 +150,8 @@ const AI_ROUTINE_LIBRARY: Record<AiProfileKey, AiRoutineProfile> = {
         intensity: "Media",
         equipment: "Bandas livianas",
         icon: "target",
+        image: "https://images.unsplash.com/photo-1598971639058-fab3c3109a00?w=400&h=250&fit=crop",
+        color: "red",
       },
       {
         id: "1-3",
@@ -155,6 +163,8 @@ const AI_ROUTINE_LIBRARY: Record<AiProfileKey, AiRoutineProfile> = {
         frequency: "Diario",
         intensity: "Baja",
         icon: "heart",
+        image: "https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=400&h=250&fit=crop",
+        color: "pink",
       },
     ],
   },
@@ -175,6 +185,8 @@ const AI_ROUTINE_LIBRARY: Record<AiProfileKey, AiRoutineProfile> = {
         frequency: "Diario",
         intensity: "Baja",
         icon: "star",
+        image: "https://images.unsplash.com/photo-1452626038306-9aae5e071dd3?w=400&h=250&fit=crop",
+        color: "blue",
       },
       {
         id: "2-2",
@@ -187,6 +199,8 @@ const AI_ROUTINE_LIBRARY: Record<AiProfileKey, AiRoutineProfile> = {
         intensity: "Media",
         equipment: "Banda ligera",
         icon: "trophy",
+        image: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400&h=250&fit=crop",
+        color: "amber",
       },
       {
         id: "2-3",
@@ -198,6 +212,8 @@ const AI_ROUTINE_LIBRARY: Record<AiProfileKey, AiRoutineProfile> = {
         frequency: "2x semana",
         intensity: "Media",
         icon: "zap",
+        image: "https://images.unsplash.com/photo-1518611012118-696072aa579a?w=400&h=250&fit=crop",
+        color: "indigo",
       },
     ],
   },
@@ -218,6 +234,8 @@ const AI_ROUTINE_LIBRARY: Record<AiProfileKey, AiRoutineProfile> = {
         frequency: "5x semana",
         intensity: "Baja",
         icon: "star",
+        image: "https://images.unsplash.com/photo-1445384763658-0400939829cd?w=400&h=250&fit=crop",
+        color: "teal",
       },
       {
         id: "3-2",
@@ -230,6 +248,8 @@ const AI_ROUTINE_LIBRARY: Record<AiProfileKey, AiRoutineProfile> = {
         intensity: "Baja",
         equipment: "Silla estable",
         icon: "heart",
+        image: "https://images.unsplash.com/photo-1599901860904-17e6ed7083a0?w=400&h=250&fit=crop",
+        color: "rose",
       },
       {
         id: "3-3",
@@ -241,6 +261,8 @@ const AI_ROUTINE_LIBRARY: Record<AiProfileKey, AiRoutineProfile> = {
         frequency: "3x semana",
         intensity: "Baja",
         icon: "target",
+        image: "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=400&h=250&fit=crop",
+        color: "violet",
       },
     ],
   },
@@ -260,6 +282,8 @@ const AI_ROUTINE_LIBRARY: Record<AiProfileKey, AiRoutineProfile> = {
         frequency: "Diario",
         intensity: "Baja",
         icon: "spark",
+        image: "https://images.unsplash.com/photo-1549576490-b0b4831ef60a?w=400&h=250&fit=crop",
+        color: "lime",
       },
       {
         id: "4-2",
@@ -272,6 +296,8 @@ const AI_ROUTINE_LIBRARY: Record<AiProfileKey, AiRoutineProfile> = {
         intensity: "Media",
         equipment: "Peso corporal",
         icon: "zap",
+        image: "https://images.unsplash.com/photo-1601422407692-ec4eeec1d9b3?w=400&h=250&fit=crop",
+        color: "cyan",
       },
       {
         id: "4-3",
@@ -283,6 +309,8 @@ const AI_ROUTINE_LIBRARY: Record<AiProfileKey, AiRoutineProfile> = {
         frequency: "Objetivo diario",
         intensity: "Baja",
         icon: "heart",
+        image: "https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?w=400&h=250&fit=crop",
+        color: "fuchsia",
       },
     ],
   },
@@ -308,7 +336,13 @@ export function Dashboard({ onNavigate }: DashboardProps) {
   );
   const energy = Math.min(100, Math.max(0, progress.energiaTotal || 0));
   const health = Math.min(100, Math.max(0, progress.saludTotal || 0));
-  const rawAiProfileType = authUser?.aiProfileType ?? authUser?.riskProfile;
+  
+  // Obtener el cluster del perfil de salud
+  const healthProfile = authUser?.healthProfile ?? authUser?.perfilSalud;
+  const clusterFromProfile = healthProfile?.cluster;
+  
+  // Priorizar cluster del perfil de salud, luego aiProfileType, luego riskProfile
+  const rawAiProfileType = clusterFromProfile ?? authUser?.aiProfileType ?? authUser?.riskProfile;
   const parsedAiProfile =
     typeof rawAiProfileType === "string"
       ? Number.parseInt(rawAiProfileType, 10)
@@ -349,6 +383,38 @@ export function Dashboard({ onNavigate }: DashboardProps) {
       unlocked: false,
     },
   ]);
+
+  const [selectedRoutine, setSelectedRoutine] = useState<AiRoutine | null>(null);
+  const [simulatedTime, setSimulatedTime] = useState(0);
+  const [isTimerRunning, setIsTimerRunning] = useState(false);
+
+  // Efecto para el cronómetro simulado
+  React.useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (isTimerRunning && selectedRoutine) {
+      interval = setInterval(() => {
+        setSimulatedTime((prev) => prev + 1);
+      }, 1000);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [isTimerRunning, selectedRoutine]);
+
+  // Resetear cronómetro cuando se cierra el modal
+  React.useEffect(() => {
+    if (!selectedRoutine) {
+      setSimulatedTime(0);
+      setIsTimerRunning(false);
+    }
+  }, [selectedRoutine]);
+
+  // Función para formatear el tiempo
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
 
   return (
     <div className="max-w-6xl mx-auto p-4 space-y-8">
@@ -627,7 +693,7 @@ export function Dashboard({ onNavigate }: DashboardProps) {
         {/* Main Content */}
         <div className="lg:col-span-2 space-y-8">
           {/* AI Recommended Routines */}
-          <Card className="gaming-card">
+          <Card className="gaming-card overflow-hidden">
             <CardHeader className="pb-4">
               <div>
                 <p className="text-xs uppercase tracking-wider text-blue-primary/70 mb-1">
@@ -652,52 +718,80 @@ export function Dashboard({ onNavigate }: DashboardProps) {
                 </p>
               </div>
             </CardHeader>
-            <CardContent className="space-y-3 pt-2">
-              {aiProfile.routines.map((routine) => {
+            <CardContent className="space-y-4 pt-1 px-6 pb-6">
+              {aiProfile.routines.map((routine, index) => {
                 const RoutineIcon = ROUTINE_ICON_MAP[routine.icon] || Sparkles;
+
+                const colorMap: Record<string, { border: string; icon: string; accent: string }> = {
+                  orange: { border: "border-orange-500", icon: "bg-orange-500 text-white", accent: "text-orange-600" },
+                  sky: { border: "border-sky-500", icon: "bg-sky-500 text-white", accent: "text-sky-600" },
+                  purple: { border: "border-purple-500", icon: "bg-purple-500 text-white", accent: "text-purple-600" },
+                  emerald: { border: "border-emerald-500", icon: "bg-emerald-500 text-white", accent: "text-emerald-600" },
+                  red: { border: "border-red-500", icon: "bg-red-500 text-white", accent: "text-red-600" },
+                  pink: { border: "border-pink-500", icon: "bg-pink-500 text-white", accent: "text-pink-600" },
+                  blue: { border: "border-blue-500", icon: "bg-blue-500 text-white", accent: "text-blue-600" },
+                  amber: { border: "border-amber-500", icon: "bg-amber-500 text-white", accent: "text-amber-600" },
+                  indigo: { border: "border-indigo-500", icon: "bg-indigo-500 text-white", accent: "text-indigo-600" },
+                  teal: { border: "border-teal-500", icon: "bg-teal-500 text-white", accent: "text-teal-600" },
+                  rose: { border: "border-rose-500", icon: "bg-rose-500 text-white", accent: "text-rose-600" },
+                  violet: { border: "border-violet-500", icon: "bg-violet-500 text-white", accent: "text-violet-600" },
+                  lime: { border: "border-lime-500", icon: "bg-lime-500 text-white", accent: "text-lime-600" },
+                  cyan: { border: "border-cyan-500", icon: "bg-cyan-500 text-white", accent: "text-cyan-600" },
+                  fuchsia: { border: "border-fuchsia-500", icon: "bg-fuchsia-500 text-white", accent: "text-fuchsia-600" },
+                };
+
+                const colors = colorMap[routine.color] || colorMap.blue;
+
                 return (
                   <div
                     key={routine.id}
-                    className="group relative overflow-hidden rounded-2xl border border-border bg-card p-4 transition-all duration-200 hover:border-blue-primary/50 hover:shadow-md"
+                    className={`group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 bg-card border-2 ${colors.border} hover:border-blue-primary flex cursor-pointer hover:scale-[1.01] active:scale-[0.99]`}
+                    onClick={() => setSelectedRoutine(routine)}
                   >
-                    <div className="flex items-start gap-4">
-                      <div className="flex-shrink-0 rounded-xl bg-blue-primary/10 p-2.5 text-blue-primary">
-                        <RoutineIcon className="h-5 w-5" />
+                    {/* Contenedor de texto - 60% */}
+                    <div className="relative z-10 w-[60%] p-6">
+                      <div className="mb-4">
+                        <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">
+                          {routine.focus}
+                        </p>
+                        <h4 className="text-xl font-bold text-foreground leading-tight group-hover:text-blue-primary transition-colors">
+                          {routine.title}
+                        </h4>
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-start justify-between gap-3 mb-2">
-                          <div>
-                            <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-0.5">
-                              {routine.focus}
-                            </p>
-                            <h4 className="text-base font-semibold text-foreground">
-                              {routine.title}
-                            </h4>
-                          </div>
-                          <Badge className="flex-shrink-0 bg-blue-primary/10 text-blue-primary border-transparent text-xs">
-                            {routine.intensity}
-                          </Badge>
-                        </div>
-                        <p className="text-sm text-muted-foreground leading-relaxed mb-3">
+
+                      <div className="space-y-3">
+                        <p className="text-sm text-muted-foreground leading-relaxed">
                           {routine.details}
                         </p>
-                        <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
-                          <span className="inline-flex items-center gap-1.5">
-                            <Clock3 className="h-3.5 w-3.5" />
+                        
+                        <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
+                          <span className="inline-flex items-center gap-1.5 font-semibold">
+                            <Clock3 className="h-4 w-4" />
                             {routine.duration}
                           </span>
-                          <span className="inline-flex items-center gap-1.5">
-                            <CalendarDays className="h-3.5 w-3.5" />
+                          <span className="inline-flex items-center gap-1.5 font-semibold">
+                            <CalendarDays className="h-4 w-4" />
                             {routine.frequency}
                           </span>
                           {routine.equipment && (
-                            <span className="text-foreground/70">
-                              • Equipo: {routine.equipment}
+                            <span className="font-medium">
+                              • {routine.equipment}
                             </span>
                           )}
                         </div>
                       </div>
                     </div>
+
+                    {/* Contenedor de imagen - 40% */}
+                    {routine.image && (
+                      <div className="relative w-[40%] overflow-hidden">
+                        <img
+                          src={routine.image}
+                          alt={routine.title}
+                          className="h-full w-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
+                        />
+                      </div>
+                    )}
                   </div>
                 );
               })}
@@ -756,6 +850,176 @@ export function Dashboard({ onNavigate }: DashboardProps) {
           </Card>
         </div>
       </div>
+
+      {/* Modal de Detalles de Rutina */}
+      <Dialog open={!!selectedRoutine} onOpenChange={() => setSelectedRoutine(null)}>
+        <DialogContent className="max-w-2xl !bg-slate-900 border-2 border-slate-700 shadow-2xl [&>button]:text-white [&>button]:hover:bg-white/10">
+          {selectedRoutine && (
+            <>
+              <DialogHeader>
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1">
+                    <DialogTitle className="text-2xl font-bold text-white mb-2">
+                      {selectedRoutine.title}
+                    </DialogTitle>
+                    <DialogDescription className="text-base text-gray-200">
+                      {selectedRoutine.focus}
+                    </DialogDescription>
+                  </div>
+                  {(() => {
+                    const IconComponent = ROUTINE_ICON_MAP[selectedRoutine.icon];
+                    const iconColorMap: Record<string, { bg: string; icon: string }> = {
+                      orange: { bg: 'bg-orange-100', icon: 'text-orange-600' },
+                      sky: { bg: 'bg-sky-100', icon: 'text-sky-600' },
+                      purple: { bg: 'bg-purple-100', icon: 'text-purple-600' },
+                      emerald: { bg: 'bg-emerald-100', icon: 'text-emerald-600' },
+                      red: { bg: 'bg-red-100', icon: 'text-red-600' },
+                      pink: { bg: 'bg-pink-100', icon: 'text-pink-600' },
+                      blue: { bg: 'bg-blue-100', icon: 'text-blue-600' },
+                      amber: { bg: 'bg-amber-100', icon: 'text-amber-600' },
+                      indigo: { bg: 'bg-indigo-100', icon: 'text-indigo-600' },
+                      teal: { bg: 'bg-teal-100', icon: 'text-teal-600' },
+                      rose: { bg: 'bg-rose-100', icon: 'text-rose-600' },
+                      violet: { bg: 'bg-violet-100', icon: 'text-violet-600' },
+                      lime: { bg: 'bg-lime-100', icon: 'text-lime-600' },
+                      cyan: { bg: 'bg-cyan-100', icon: 'text-cyan-600' },
+                      fuchsia: { bg: 'bg-fuchsia-100', icon: 'text-fuchsia-600' },
+                    };
+                    const iconColors = iconColorMap[selectedRoutine.color] || iconColorMap.blue;
+                    return (
+                      <div className={`p-3 ${iconColors.bg} rounded-xl`}>
+                        <IconComponent className={`w-8 h-8 ${iconColors.icon}`} />
+                      </div>
+                    );
+                  })()}
+                </div>
+              </DialogHeader>
+
+              <div className="space-y-6 mt-4">
+                {/* Imagen de la rutina */}
+                {selectedRoutine.image && (
+                  <div className="relative h-48 rounded-xl overflow-hidden border-2 border-slate-700">
+                    <img 
+                      src={selectedRoutine.image} 
+                      alt={selectedRoutine.title}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
+                  </div>
+                )}
+
+                {/* Descripción */}
+                <div className="bg-slate-800 rounded-xl p-4 border border-slate-700">
+                  <h4 className="font-semibold text-white mb-2 flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 text-blue-primary" />
+                    Descripción
+                  </h4>
+                  <p className="text-gray-200 leading-relaxed">
+                    {selectedRoutine.details}
+                  </p>
+                </div>
+
+                {/* Información de la rutina */}
+                <div className="grid grid-cols-2 gap-4">
+                  {(() => {
+                    const infoColorMap: Record<string, { bg: string; border: string; icon: string }> = {
+                      orange: { bg: 'bg-orange-50', border: 'border-orange-300', icon: 'text-orange-600' },
+                      sky: { bg: 'bg-sky-50', border: 'border-sky-300', icon: 'text-sky-600' },
+                      purple: { bg: 'bg-purple-50', border: 'border-purple-300', icon: 'text-purple-600' },
+                      emerald: { bg: 'bg-emerald-50', border: 'border-emerald-300', icon: 'text-emerald-600' },
+                      red: { bg: 'bg-red-50', border: 'border-red-300', icon: 'text-red-600' },
+                      pink: { bg: 'bg-pink-50', border: 'border-pink-300', icon: 'text-pink-600' },
+                      blue: { bg: 'bg-blue-50', border: 'border-blue-300', icon: 'text-blue-600' },
+                      amber: { bg: 'bg-amber-50', border: 'border-amber-300', icon: 'text-amber-600' },
+                      indigo: { bg: 'bg-indigo-50', border: 'border-indigo-300', icon: 'text-indigo-600' },
+                      teal: { bg: 'bg-teal-50', border: 'border-teal-300', icon: 'text-teal-600' },
+                      rose: { bg: 'bg-rose-50', border: 'border-rose-300', icon: 'text-rose-600' },
+                      violet: { bg: 'bg-violet-50', border: 'border-violet-300', icon: 'text-violet-600' },
+                      lime: { bg: 'bg-lime-50', border: 'border-lime-300', icon: 'text-lime-600' },
+                      cyan: { bg: 'bg-cyan-50', border: 'border-cyan-300', icon: 'text-cyan-600' },
+                      fuchsia: { bg: 'bg-fuchsia-50', border: 'border-fuchsia-300', icon: 'text-fuchsia-600' },
+                    };
+                    const infoColors = infoColorMap[selectedRoutine.color] || infoColorMap.blue;
+
+                    return (
+                      <>
+                        <div className={`${infoColors.bg} rounded-xl p-4 border ${infoColors.border}`}>
+                          <div className="flex items-center gap-2 mb-1">
+                            <Clock3 className={`w-4 h-4 ${infoColors.icon}`} />
+                            <span className="text-sm font-medium text-gray-700">Duración</span>
+                          </div>
+                          <p className="font-semibold text-gray-900">{selectedRoutine.duration}</p>
+                        </div>
+
+                        <div className={`${infoColors.bg} rounded-xl p-4 border ${infoColors.border}`}>
+                          <div className="flex items-center gap-2 mb-1">
+                            <CalendarDays className={`w-4 h-4 ${infoColors.icon}`} />
+                            <span className="text-sm font-medium text-gray-700">Frecuencia</span>
+                          </div>
+                          <p className="font-semibold text-gray-900">{selectedRoutine.frequency}</p>
+                        </div>
+
+                        {selectedRoutine.equipment && (
+                          <div className={`${infoColors.bg} rounded-xl p-4 border ${infoColors.border} col-span-2`}>
+                            <div className="flex items-center gap-2 mb-1">
+                              <Target className={`w-4 h-4 ${infoColors.icon}`} />
+                              <span className="text-sm font-medium text-gray-700">Equipamiento</span>
+                            </div>
+                            <p className="font-semibold text-gray-900">{selectedRoutine.equipment}</p>
+                          </div>
+                        )}
+                      </>
+                    );
+                  })()}
+                </div>
+
+                {/* Cronómetro de Rutina */}
+                <div className="bg-gradient-to-br from-slate-700 to-slate-800 rounded-xl p-6 border-2 border-slate-600">
+                  <div className="flex items-center gap-2 mb-4">
+                    <Clock3 className="w-5 h-5 text-white" />
+                    <h4 className="font-semibold text-white">Cronómetro de Rutina</h4>
+                  </div>
+                  
+                  <div className="flex items-center justify-center mb-4">
+                    <div className="text-5xl font-bold text-white font-mono tabular-nums">
+                      {formatTime(simulatedTime)}
+                    </div>
+                  </div>
+
+                  <div className="flex gap-2">
+                    {!isTimerRunning ? (
+                      <Button
+                        onClick={() => setIsTimerRunning(true)}
+                        className="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold border border-green-700"
+                      >
+                        <PlayCircle className="w-4 h-4 mr-2" />
+                        Iniciar
+                      </Button>
+                    ) : (
+                      <Button
+                        onClick={() => setIsTimerRunning(false)}
+                        className="flex-1 bg-orange-600 hover:bg-orange-700 text-white font-semibold border border-orange-700"
+                      >
+                        <CirclePause className="w-4 h-4 mr-2" />
+                        Pausar
+                      </Button>
+                    )}
+                    <Button
+                      onClick={() => {
+                        setSimulatedTime(0);
+                        setIsTimerRunning(false);
+                      }}
+                      className="flex-1 bg-slate-600 hover:bg-slate-500 !text-white border-0 font-semibold"
+                    >
+                      Reiniciar
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
